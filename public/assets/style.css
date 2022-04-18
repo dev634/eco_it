@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green-dark: #0a8a66;
+  --green: #0ea47a;
+  --green-clear: #3eb896;
+  --shift: 48px;
+}
+
+body {
+  background-color: #efefef;
+  height: calc(100vh + var(--shift));
+}
+
+.isValid:after {
+  content: "";
+  background-color: red;
+  height: 20px;
+  width: 20px;
+  display: block;
+}
+
+@media screen and (max-height: 600px) {
+  .infos {
+    margin-bottom: 8vh;
+  }
+
+  .admin__page {
+    width: 100vw;
+    height: 100%;
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "projet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./public/assets/style.css -o ./dist/main.css --watch",
+    "start:server": "nodemon --watch . -e js,hbs",
+    "create:db": "psql -f ./sql/create.sql -U postgres",
+    "connect:db": "psql \"host=localhost port=5432 dbname=eco_it user=postgres password=pablolola1984\"",
+    "start:proxy": "browser-sync start --proxy \"localhost:3000\" --files \"**/*\" --port 4000",
+    "start:dev": "concurrently \"npm run build:css\" \"npm run start:server\" \"npm run start:proxy\"",
+    "test:db": "npm run create:db && echo \\i sql/database.sql | npm run connect:db && npm run connect:db"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express-handlebars": "^6.0.5",
+    "pg": "^8.7.3",
+    "tailwindcss": "^3.0.24"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.9",
+    "morgan": "^1.10.0"
+  }
+}

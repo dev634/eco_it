@@ -1,0 +1,9 @@
+{{#if to}}
+  {{#if text}}
+    <a class="link {{classes}}" href={{to}}>{{text}}</a>
+  {{else}}
+    <a class={{classes}} href={{to}}>No text</a>
+  {{/if}}
+{{else}}
+  <a class={{classes}} href="#">Empty link</a>
+{{/if}}
