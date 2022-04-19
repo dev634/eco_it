@@ -1,8 +1,10 @@
 import { checkAdminSignupForm } from "./forms.js";
+import { postAdmin } from "./api.js";
 
 window.onload = function (e) {
   let backlink = document.getElementById("go-back");
   const adminSignupForm = document.getElementById("admin-signup-form");
+  const loader = document.getElementById("loader");
 
   if (backlink) {
     backlink.addEventListener("click", function (e) {
@@ -12,9 +14,18 @@ window.onload = function (e) {
   }
 
   if (adminSignupForm) {
-    adminSignupForm.addEventListener("click", function (e) {
-      if (e.target.id === "subscribe") {
-        checkAdminSignupForm(this, 4);
+    adminSignupForm.addEventListener("click", async function (e) {
+      if (e.target.id === "subscribe" && checkAdminSignupForm(this, 4)) {
+        let datas = {
+          username: this[0].value,
+          email: this[1].value,
+          password: this[2].value,
+        };
+        let result = await postAdmin(datas);
+        loader.classList.remove("hidden");
+        if (result.status === 201) {
+          history.go("/admin");
+        }
       }
     });
 

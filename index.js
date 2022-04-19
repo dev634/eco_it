@@ -3,6 +3,7 @@ const { engine } = require("express-handlebars");
 const hbsSettings = require("./constantes/hbsSettings");
 const morgan = require("morgan");
 const path = require("path");
+const cors = require("cors");
 
 //routes
 const rootRouter = require("./routes/index");
@@ -24,6 +25,9 @@ app.engine(
 app.set("view engine", ".hbs");
 app.set("views", "./views");
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(rootRouter);
 
 app.listen(PORT, function () {
