@@ -1,5 +1,5 @@
 const AdminModel = require("../Models/admin");
-const { render } = require("../helpers/server");
+const { render, hashPassword } = require("../helpers/server");
 
 async function getAdmin(req, res) {
   let result = await AdminModel.checkAdmin();
@@ -22,6 +22,7 @@ async function getAdmin(req, res) {
 
 async function postAdmin(req, res) {
   try {
+    req.body.password = await hashPassword(req.body.password);
     let result = await AdminModel.create(req.body);
     res.status(result.status).json(result);
   } catch (error) {

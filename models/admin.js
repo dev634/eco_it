@@ -1,4 +1,4 @@
-let pool = require("../Services/db");
+const pool = require("../Services/db");
 
 async function checkAdmin() {
   let request = "SELECT * FROM Administrators";
