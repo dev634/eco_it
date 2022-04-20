@@ -28,10 +28,7 @@ async function create(payload) {
     let resultOne = await pool.query(requestOne, [payload.email, payload.password]);
     if (resultOne.rowCount > 0) {
       let resultTwo = await pool.query(requestTwo, [resultOne.rows[0].id, payload.username]);
-      return {
-        status: 201,
-        message: "Created successfully",
-      };
+      return { userId: resultOne.rows[0].id };
     }
   } catch (error) {
     throw {
@@ -52,7 +49,6 @@ async function update(payload) {
       message: "Updated successfully",
     };
   } catch (error) {
-    console.log(error);
     throw {
       status: 500,
       message: "Something wrong",

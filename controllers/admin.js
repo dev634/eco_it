@@ -7,6 +7,7 @@ const {
   comparePassword,
   genPassword,
 } = require("../helpers/server");
+const { genAccessToken, verifyAccessToken } = require("../helpers/jwt_help");
 
 async function getAdmin(req, res) {
   let result = await AdminModel.checkAdmin();
@@ -16,9 +17,21 @@ async function getAdmin(req, res) {
     return redirect(res, "/admin/auth/subscribe");
   }
 
-  //check if admin exists and if user admin not connected
-  if (result && true) {
+  // if admin but no token access
+  if (result && !req.query.access_token) {
     return redirect(res, "/admin/auth/connect");
+  }
+
+  //if access token
+  if (req.query.access_token) {
+    let testAccessToken = await verifyAccessToken(req.query.access_token);
+    console.log(testAccessToken);
+    if (result && testAccessToken) {
+    }
+
+    if (result && !testAccessToken) {
+      return redirect(res, "/admin/auth/connect");
+    }
   }
 
   render(res, "admin", {
@@ -29,6 +42,12 @@ async function getAdmin(req, res) {
 }
 
 async function adminConnect(req, res) {
+  let result = await AdminModel.checkAdmin();
+
+  if (!result) {
+    return redirect(res, "/admin/auth/connect");
+  }
+
   render(res, "connect", {
     pageTitle: "Connection",
     layout: "admin",
@@ -37,6 +56,10 @@ async function adminConnect(req, res) {
 }
 
 async function adminSubscribe(req, res) {
+  let result = await AdminModel.checkAdmin();
+  if (result) {
+    return redirect(res, "/admin/auth/connect");
+  }
   render(res, "admin-subscribe", {
     pageTitle: "Inscription",
     layout: "admin",
@@ -45,6 +68,10 @@ async function adminSubscribe(req, res) {
 }
 
 async function adminForget(req, res) {
+  let result = await AdminModel.checkAdmin();
+  if (!result) {
+    return redirect(res, "/admin/auth/subscribe");
+  }
   render(res, "forget", {
     pageTitle: "Mot de passe oublié",
     layout: "admin",
@@ -56,7 +83,12 @@ async function postAdmin(req, res) {
   try {
     req.body.password = await hashPassword(req.body.password);
     let result = await AdminModel.create(req.body);
-    res.status(result.status).json(result);
+    let accessToken = await genAccessToken(result.userId);
+
+    res.status(201).json({
+      status: 201,
+      accessToken,
+    });
   } catch (error) {
     res.status(error.status).json(error);
   }
@@ -72,9 +104,12 @@ async function postConnectAdmin(req, res) {
         message: "Unauthorized",
       };
     }
+
+    let token = await genAccessToken(result.id);
     res.status(200).json({
       status: 200,
       message: "Authorized",
+      accessToken: token,
     });
   } catch (error) {
     res.status(error.status).json(error);

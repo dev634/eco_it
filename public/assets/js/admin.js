@@ -8,6 +8,15 @@ window.onload = function (e) {
   const adminForgetForm = document.getElementById("admin-forget-form");
   const loader = document.getElementById("loader");
 
+  if (
+    location.pathname === "/admin" &&
+    !!localStorage.getItem("accessToken") &&
+    !location.search.includes("access_token")
+  ) {
+    console.log("test");
+    location = `/admin?access_token=${localStorage.getItem("accessToken")}`;
+  }
+
   if (backlink) {
     backlink.addEventListener("click", function (e) {
       e.preventDefault();
@@ -26,7 +35,10 @@ window.onload = function (e) {
         let result = await postAdmin(datas);
         loader.classList.remove("hidden");
         if (result.status === 201) {
-          location = "/admin";
+          setTimeout(() => {
+            localStorage.setItem("accessToken", result.accessToken);
+            location = "/admin";
+          }, 5000);
         }
       }
     });
@@ -54,8 +66,10 @@ window.onload = function (e) {
         };
         let result = await postAdminConnect(datas);
         loader.classList.remove("hidden");
+
         if (result.status === 200) {
-          location = "/admin";
+          localStorage.setItem("accessToken", result.accessToken);
+          location = `/admin?access_token=${result.accessToken}`;
         }
       }
     });
