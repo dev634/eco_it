@@ -70,7 +70,10 @@ window.onload = function (e) {
         if (result.status === 200) {
           localStorage.setItem("accessToken", result.accessToken);
           location = `/admin?access_token=${result.accessToken}`;
+          return;
         }
+
+        location = "/admin/auth/connect";
       }
     });
 
