@@ -1,0 +1,16 @@
+<div class="shadow bg-white form w-full h-full sm:h-auto sm:py-4 flex items-center max-w-lg mx-auto">
+  <form id="admin-forget-form" class="w-full rounded px-8 mb-4 sm:mt-0 sm:h-auto">
+     <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+        Email
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="Email">
+      <p class="invisible text-red-500 text-xs italic">Please choose a password.</p>
+    </div>
+    <div class="flex flex-wrap items-center justify-between">
+      <button id="send_email" class="w-full bg-green-500 mb-2 flex items-center justify-center hover:bg-green-700 active:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+        {{> loader}}
+        Envoyer
+      </button>
+    </div>
+  </form>

@@ -145,3 +145,85 @@ export function checkAdminSignupForm(form, max) {
   }
   return map.every((elmt) => elmt === true);
 }
+
+export function checkAdminSigninForm(form, max) {
+  let map = [];
+
+  //init map
+  for (let i = 0; i < max; i++) {
+    map.push(null);
+  }
+
+  for (let i = 0; i < max; i++) {
+    if (form[i].value.length === 0) {
+      changeFieldToInvalid(form[i], `${form[i].id} is required`);
+    }
+
+    if (form[i].id === "email") {
+      if (form[i].value.length > 0 && !isEmail(form[i].value)) {
+        changeFieldToInvalid(form[i], `${form[i].id} not valid`);
+        continue;
+      }
+
+      if (isEmail(form[i].value)) {
+        map[i] = true;
+        changeToValid(form[i]);
+        continue;
+      }
+    }
+
+    if (form[i].id === "password") {
+      if (form[i].value.length > 0 && !checkLength(form[i].value, 6, 16)) {
+        changeFieldToInvalid(form[i], `Should contain between 6 and 16 letters`);
+        continue;
+      }
+      if (form[i].value.length > 0 && !isValid(form[i].value, password)) {
+        changeFieldToInvalid(form[i], "Should contain letters or numbers");
+        continue;
+      }
+
+      if (
+        checkAll(form[i].value, [
+          checkLength(form[i].value, 6, 16),
+          isValid(form[i].value, password),
+        ])
+      ) {
+        map[i] = true;
+        changeToValid(form[i]);
+        continue;
+      }
+    }
+  }
+
+  return map.every((elmt) => elmt === true);
+}
+
+export function checkAdminForgetForm(form, max) {
+  let map = [];
+
+  //init map
+  for (let i = 0; i < max; i++) {
+    map.push(null);
+  }
+
+  for (let i = 0; i < max; i++) {
+    if (form[i].value.length === 0) {
+      changeFieldToInvalid(form[i], `${form[i].id} is required`);
+    }
+
+    if (form[i].id === "email") {
+      if (form[i].value.length > 0 && !isEmail(form[i].value)) {
+        changeFieldToInvalid(form[i], `${form[i].id} not valid`);
+        continue;
+      }
+
+      if (isEmail(form[i].value)) {
+        map[i] = true;
+        changeToValid(form[i]);
+        continue;
+      }
+    }
+  }
+
+  return map.every((elmt) => elmt === true);
+}
