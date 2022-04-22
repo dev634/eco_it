@@ -1,4 +1,7 @@
 const AdminModel = require("../Models/admin");
+const InstructorModel = require("../Models/instructors");
+const StudentModel = require("../Models/students");
+const CoursesModel = require("../Models/courses");
 const { sendPassword } = require("../Services/mailer");
 const {
   redirect,
@@ -11,6 +14,12 @@ const { genAccessToken, verifyAccessToken } = require("../helpers/jwt_help");
 
 async function getAdmin(req, res) {
   let result = await AdminModel.checkAdmin();
+  let instructors = await InstructorModel.getAll();
+  let students = await StudentModel.getAll();
+  let courses = await CoursesModel.getAll();
+  let averageCoursesPerInstructors = isNaN(Number(courses) / Number(instructors))
+    ? 0
+    : Math.floor(Number(courses) / Number(instructors));
 
   //check if no admin exists
   if (!result) {
@@ -25,9 +34,6 @@ async function getAdmin(req, res) {
   //if access token
   if (req.query.access_token) {
     let testAccessToken = await verifyAccessToken(req.query.access_token);
-    console.log(testAccessToken);
-    if (result && testAccessToken) {
-    }
 
     if (result && !testAccessToken) {
       return redirect(res, "/admin/auth/connect");
@@ -38,6 +44,10 @@ async function getAdmin(req, res) {
     pageTitle: "Administration",
     layout: "admin",
     goBack: false,
+    instructorsNum: instructors.length,
+    studentsNum: students.length,
+    coursesNum: courses.length,
+    averageCoursesPerInstructors,
   });
 }
 
@@ -57,9 +67,11 @@ async function adminConnect(req, res) {
 
 async function adminSubscribe(req, res) {
   let result = await AdminModel.checkAdmin();
+
   if (result) {
     return redirect(res, "/admin/auth/connect");
   }
+
   render(res, "admin-subscribe", {
     pageTitle: "Inscription",
     layout: "admin",
@@ -126,6 +138,7 @@ async function postForgetAdmin(req, res) {
         message: "Bad request",
       };
     }
+
     //create new password
     let newPass = await genPassword();
 

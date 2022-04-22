@@ -8,12 +8,7 @@ window.onload = function (e) {
   const adminForgetForm = document.getElementById("admin-forget-form");
   const loader = document.getElementById("loader");
 
-  if (
-    location.pathname === "/admin" &&
-    !!localStorage.getItem("accessToken") &&
-    !location.search.includes("access_token")
-  ) {
-    console.log("test");
+  if (location.pathname === "/admin/auth/connect" && localStorage.getItem("accessToken")) {
     location = `/admin?access_token=${localStorage.getItem("accessToken")}`;
   }
 
@@ -37,7 +32,7 @@ window.onload = function (e) {
         if (result.status === 201) {
           setTimeout(() => {
             localStorage.setItem("accessToken", result.accessToken);
-            location = "/admin";
+            location = `/admin?access_token=${result.accessToken}`;
           }, 5000);
         }
       }
