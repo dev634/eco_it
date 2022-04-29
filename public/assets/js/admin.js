@@ -8,8 +8,12 @@ window.onload = function (e) {
   const adminForgetForm = document.getElementById("admin-forget-form");
   const loader = document.getElementById("loader");
 
-  if (location.pathname === "/admin/auth/connect" && localStorage.getItem("accessToken")) {
-    location = `/admin?access_token=${localStorage.getItem("accessToken")}`;
+  if (!localStorage.getItem("accessToken")) {
+    localStorage.setItem("accessToken", "");
+  }
+
+  if (localStorage.getItem("accessToken") && !location.search.includes("access_token")) {
+    location += `?access_token=${localStorage.getItem("accessToken")}`;
   }
 
   if (backlink) {
@@ -20,21 +24,20 @@ window.onload = function (e) {
   }
 
   if (adminSignupForm) {
-    adminSignupForm.addEventListener("click", async function (e) {
-      if (e.target.id === "subscribe" && checkAdminSignupForm(this, 4)) {
+    adminSignupForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      let button = document.getElementById("subscribe");
+      button.setAttribute("disabled", "");
+      if (checkAdminSignupForm(this, 4)) {
         let datas = {
           username: this[0].value,
           email: this[1].value,
           password: this[2].value,
         };
+
         let result = await postAdmin(datas);
         loader.classList.remove("hidden");
-        if (result.status === 201) {
-          setTimeout(() => {
-            localStorage.setItem("accessToken", result.accessToken);
-            location = `/admin?access_token=${result.accessToken}`;
-          }, 5000);
-        }
+        button.removeAttribute("disabled");
       }
     });
 

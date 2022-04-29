@@ -1,4 +1,5 @@
 const pool = require("../Services/db");
+const { makeDbErrors } = require("../helpers/errors");
 
 async function checkAdmin() {
   let request = "SELECT * FROM Administrators";
@@ -6,7 +7,7 @@ async function checkAdmin() {
     let result = await pool.query(request);
     return !!result.rows[0];
   } catch (error) {
-    throw error;
+    makeDbErrors(error);
   }
 }
 
@@ -17,7 +18,7 @@ async function getAdmin(payload) {
     let result = await pool.query(request, [payload.email]);
     return result.rows[0];
   } catch (error) {
-    throw error;
+    makeDbErrors(error);
   }
 }
 
@@ -31,10 +32,7 @@ async function create(payload) {
       return { userId: resultOne.rows[0].id };
     }
   } catch (error) {
-    throw {
-      status: 500,
-      message: "Something wrong",
-    };
+    makeDbErrors(error);
   }
 }
 
@@ -49,10 +47,7 @@ async function update(payload) {
       message: "Updated successfully",
     };
   } catch (error) {
-    throw {
-      status: 500,
-      message: "Something wrong",
-    };
+    makeDbErrors(error);
   }
 }
 

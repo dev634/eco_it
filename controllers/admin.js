@@ -11,35 +11,40 @@ const {
   genPassword,
 } = require("../helpers/server");
 const { genAccessToken, verifyAccessToken } = require("../helpers/jwt_help");
+const authSchema = require("../validation/auth");
 
 async function getAdmin(req, res) {
   let result = await AdminModel.checkAdmin();
-  let instructors = await InstructorModel.getAll();
-  let students = await StudentModel.getAll();
-  let courses = await CoursesModel.getAll();
-  let averageCoursesPerInstructors = isNaN(Number(courses) / Number(instructors))
-    ? 0
-    : Math.floor(Number(courses) / Number(instructors));
-
   //check if no admin exists
   if (!result) {
     return redirect(res, "/admin/auth/subscribe");
-  }
-
-  // if admin but no token access
-  if (result && !req.query.access_token) {
-    return redirect(res, "/admin/auth/connect");
   }
 
   //if access token
   if (req.query.access_token) {
     let testAccessToken = await verifyAccessToken(req.query.access_token);
 
+    if (result && testAccessToken) {
+      return redirect(res, "/admin/welcome");
+    }
+
     if (result && !testAccessToken) {
       return redirect(res, "/admin/auth/connect");
     }
   }
 
+  render(res, "test", {
+    layout: "admin",
+  });
+}
+
+async function welcome(req, res) {
+  let instructors = await InstructorModel.getAll();
+  let students = await StudentModel.getAll();
+  let courses = await CoursesModel.getAll();
+  let averageCoursesPerInstructors = isNaN(Number(courses) / Number(instructors))
+    ? 0
+    : Math.floor(Number(courses) / Number(instructors));
   render(res, "admin", {
     pageTitle: "Administration",
     layout: "admin",
@@ -67,10 +72,9 @@ async function adminConnect(req, res) {
 
 async function adminSubscribe(req, res) {
   let result = await AdminModel.checkAdmin();
-
-  if (result) {
-    return redirect(res, "/admin/auth/connect");
-  }
+  // if (result) {
+  //   return redirect(res, "/admin/auth/connect");
+  // }
 
   render(res, "admin-subscribe", {
     pageTitle: "Inscription",
@@ -93,16 +97,31 @@ async function adminForget(req, res) {
 
 async function postAdmin(req, res) {
   try {
+    const value = await authSchema.subscribe.validateAsync({ ...req.body });
     req.body.password = await hashPassword(req.body.password);
     let result = await AdminModel.create(req.body);
     let accessToken = await genAccessToken(result.userId);
 
-    res.status(201).json({
+    return res.status(201).json({
       status: 201,
-      accessToken,
+      message: "Created successfully",
     });
   } catch (error) {
-    res.status(error.status).json(error);
+    if (error.isJoi) {
+      const details = { ...error.details[0] };
+      if (details.type === "string.pattern.base") {
+        return res.status(400).json({
+          status: 400,
+          message: `${error.details[0].path[0]} invalid.`,
+        });
+      }
+      return res.status(400).json({
+        status: 400,
+        message: details.message,
+      });
+    } else {
+      return res.status(error.status).json(error);
+    }
   }
 }
 
@@ -165,4 +184,5 @@ module.exports = {
   adminConnect,
   adminSubscribe,
   adminForget,
+  welcome,
 };

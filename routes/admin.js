@@ -8,5 +8,6 @@ const InstructorsRoute = require("./instructors");
 router.use("/admin", AuthRoute);
 router.use("/admin", InstructorsRoute);
 router.get("/admin", AdminController.getAdmin);
+router.get("/admin/welcome", AdminController.welcome);
 
 module.exports = router;
