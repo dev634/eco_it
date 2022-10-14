@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const { testErrors } = require("./helpers/errors");
 
 //routes
 const rootRouter = require("./routes/index");

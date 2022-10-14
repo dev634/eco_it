@@ -1,5 +1,6 @@
 <div class="shadow bg-white form w-full h-full sm:h-auto sm:py-4 flex items-center max-w-lg mx-auto">
-  <form id="admin-signin-form" class="w-full rounded px-8 mb-4 sm:mt-0 sm:h-auto">
+  <form id="connect" class="w-full rounded px-8 mb-4 sm:mt-0 sm:h-auto">
+    <p id="flash__message" class="text-center bg-red-400 p-2 mb-2 shadow rounded hidden">Username/Password invalid</p>
      <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
         Email
@@ -15,7 +16,7 @@
       <p class="invisible text-red-500 text-xs italic">Please choose a password.</p>
     </div>
     <div class="flex flex-wrap items-center justify-between">
-      <button id="connect" class="w-full bg-green-500 mb-2 flex items-center justify-center hover:bg-green-700 active:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+      <button id="submit" class="w-full bg-green-500 mb-2 flex items-center justify-center hover:bg-green-700 active:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
         {{> loader}}
         Se connecter
       </button>

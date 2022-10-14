@@ -8,7 +8,7 @@ function render(res, template, datas) {
 }
 
 function redirect(res, url) {
-  res.redirect(url);
+  return res.redirect(url);
 }
 
 async function genPassword(passphrase) {

@@ -5,25 +5,65 @@ function displayError(error) {
   return console.log(error);
 }
 
-module.exports.errorsHandler = function (error) {
-  if (error.isJoi) {
-    const details = { ...error.details[0] };
-    if (details.type === "string.pattern.base") {
-      return res.status(400).json({
-        status: 400,
-        message: `${error.details[0].path[0]} invalid.`,
-      });
-    }
-    return res.status(400).json({
-      status: 400,
-      message: details.message,
-    });
-  }
+//databse errors
+function DatabaseErrors(status, msg) {
+  this.code;
+}
 
-  return res.status(error.status).json(error);
+//http errors
+function HttpErrors(status, msg) {
+  this.status = status;
+  this.message = msg;
+
+  return {
+    status: status,
+    message: msg,
+  };
+}
+
+HttpErrors.BadRequest = function (msg) {
+  if (msg) {
+    return new HttpErrors(400, msg);
+  }
+  return new HttpErrors(400, "Bad request");
 };
 
-module.exports.makeDbErrors = function (error, logger) {
+HttpErrors.Unauthorized = function (msg) {
+  if (msg) {
+    return new HttpErrors(401, msg);
+  }
+  return new HttpErrors(401, "Unauthorized");
+};
+
+HttpErrors.Forbidden = function (msg) {
+  if (msg) {
+    return new HttpErrors(403, msg);
+  }
+  return new HttpErrors(403, "Forbidden");
+};
+
+HttpErrors.NotFound = function (msg) {
+  if (msg) {
+    return new HttpErrors(404, msg);
+  }
+  return new HttpErrors(404, "Not Found");
+};
+
+HttpErrors.Conflict = function (msg) {
+  if (msg) {
+    return new HttpErrors(409, msg);
+  }
+  return new HttpErrors(409, "Conflict");
+};
+
+HttpErrors.Internal = function (msg) {
+  if (msg) {
+    return new HttpErrors(500, msg);
+  }
+  return new HttpErrors(500, "Internal Error");
+};
+
+makeDbErrors = function (error, logger) {
   if (["dev", "development"].includes(process.env.NODE_ENV)) {
     displayError(error);
   }
@@ -45,4 +85,10 @@ module.exports.makeDbErrors = function (error, logger) {
     status: 500,
     message: "Something went wrong ",
   };
+};
+
+module.exports = {
+  DatabaseErrors,
+  makeDbErrors,
+  HttpErrors,
 };

@@ -8,6 +8,25 @@ function createFormData(datas) {
   return form;
 }
 
+export async function postForm(datas, url) {
+  try {
+    const form = createFormData(datas);
+    let fullUrl = `${APP_SCHEME}://${APP_URL}:${APP_PORT}${url}`;
+
+    let result = await fetch(`${fullUrl}`, {
+      method: "POST",
+      body: form,
+    });
+
+    if (result.ok) {
+      let response = await result.json();
+      return response;
+    }
+  } catch (error) {
+    return error;
+  }
+}
+
 export async function postAdmin(datas) {
   const form = createFormData(datas);
   try {
@@ -32,10 +51,13 @@ export async function postAdminConnect(datas) {
       method: "POST",
       body: form,
     });
-    if (result.status === 200 || result.status === 401) {
+
+    if (result.ok) {
       let response = await result.json();
       return response;
     }
+
+    throw result;
   } catch (error) {
     return error;
   }
@@ -50,6 +72,17 @@ export async function postAdminForget(datas) {
     });
     let response = await result.json();
     return response;
+  } catch (error) {
+    return error;
+  }
+}
+
+export async function logout() {
+  try {
+    let result = await fetch(`${APP_SCHEME}://${APP_URL}:${APP_PORT}/admin/auth/logout`, {
+      method: "GET",
+    });
+    location.reload();
   } catch (error) {
     return error;
   }

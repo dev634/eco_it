@@ -4,6 +4,7 @@ const InstructorsModel = require("../models/instructors");
 async function instructors(req, res) {
   try {
     const instructors = await InstructorsModel.getAll();
+
     render(res, "instructors", {
       pageTitle: "instructeurs",
       layout: "admin",
@@ -27,7 +28,6 @@ async function instructor(req, res) {
       alt: "Instructor photo",
     });
   } catch (error) {
-    console.log(error);
     redirect(res, "/404");
   }
 }
