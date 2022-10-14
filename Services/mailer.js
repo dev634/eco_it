@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const nodemailer = require("nodemailer");
 
-async function sendPassword(email, password) {
+async function sendPassword(email, password, errorHttp) {
   try {
     let transporter = nodemailer.createTransport({
       host: process.env.SMTP_SERVER,
@@ -20,10 +20,7 @@ async function sendPassword(email, password) {
             <p>Voici votre nouveau mot de passe ${password}`,
     });
   } catch (error) {
-    return {
-      status: 500,
-      message: "internal Error",
-    };
+    throw errorHttp.Internal();
   }
 }
 

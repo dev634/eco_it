@@ -4,5 +4,9 @@
                   {{> arrow-back}}
             {{/if}}
             <h1 class="w-full text-center text-gray-200 uppercase font-semibold">{{title}}</h1>
+            {{> logout classes=icon}}
+            <a class="cursor-pointer flex items-center" href="/admin/profile">
+                  {{> user}}
+            </a>
       </div>
 </div>

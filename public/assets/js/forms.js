@@ -121,7 +121,7 @@ export function checkAdminSignupForm(form, max) {
       }
     }
 
-    if (form[i].id === "password-confirm") {
+    if (form[i].id === "password_confirm") {
       const password = document.getElementById("password");
       if (password.value.length === 0 && form[i].value.length > 0) {
         changeFieldToInvalid(form[i], "Fill password first");
