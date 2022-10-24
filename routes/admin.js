@@ -5,6 +5,7 @@ const AdminController = require("../controllers/admin");
 const Authentication = require("../middlewares/authentication");
 const AdminModel = require("../Models/admin");
 const AuthRoute = require("./auth");
+const ProfileRoute = require("./profile");
 const InstructorsRoute = require("./instructors");
 const { verifyAccessToken, decodeToken } = require("../helpers/jwt_help");
 const { makeResponse } = require("../helpers/response");
@@ -16,6 +17,8 @@ dotenv.config();
 
 router.use("/admin", AuthRoute);
 router.use("/admin", InstructorsRoute);
+router.use("/admin", ProfileRoute);
+
 router.get(
   "/admin",
   Authentication.checkAdminMiddleware,

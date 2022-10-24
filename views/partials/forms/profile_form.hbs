@@ -1,0 +1,36 @@
+<form id="profile" class="w-72 mx-auto">
+  <div class="w-full">
+      <label class="block text-gray-700 text-sm font-bold mb-1" for="username">
+        Username :
+      </label>
+      <input id="username" class="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="username" value={{pseudo}} />
+      <p class="invisible text-red-500 text-xs italic">Please choose a username.</p>
+  </div>
+  <div class="w-full mb-1">
+      <label class="block text-gray-700 text-sm font-bold mb-1" for="email">
+        Email :
+      </label>
+      <input id="email" class="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="email" placeholder="email" value={{email}} />
+      <p class="invisible text-red-500 text-xs italic">Please choose an email.</p>
+  </div>
+  <div class="w-full mb-1">
+      <label class="block text-gray-700 text-sm font-bold mb-1" for="password">
+        Nouveau mot de passe :
+      </label>
+      <input id="password" class="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" placeholder="new password">
+      <p class="invisible text-red-500 text-xs italic">Please choose a new password.</p>
+  </div>
+  <div class="w-full mb-6">
+      <label class="block text-gray-700 text-sm font-bold mb-1" for="password_confirm">
+        Confirmer mot de passe :
+      </label>
+      <input id="password_confirm" class="shadow appearance-none border rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" placeholder="confirm password">
+      <p class="invisible text-red-500 text-xs italic">Please confirm the new password.</p>
+  </div>
+  <div class="w-full">
+      <button id="submit" class="w-full bg-green-500 mb-2 flex items-center justify-center hover:bg-green-700 active:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+        {{> loader}}
+        CHANGE
+      </button>
+  </div>
+</form>

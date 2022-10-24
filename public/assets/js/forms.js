@@ -58,6 +58,7 @@ export function checkAdminSignupForm(form, max) {
   }
 
   for (let i = 0; i < max; i++) {
+    form[i];
     if (form[i].value.length === 0) {
       changeFieldToInvalid(form[i], `${form[i].id} is required`);
     }

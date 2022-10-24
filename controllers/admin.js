@@ -109,7 +109,7 @@ async function postAdmin(req, res) {
       return makeResponse(res, HttpErrors.BadRequest(details.message));
     }
 
-    return makeResponse(res, error);
+    return makeResponse(res, HttpErrors.Internal(error));
   }
 }
 
@@ -127,7 +127,7 @@ async function postConnectAdmin(req, res) {
     makeTokenCookie(res, token);
     return makeResponse(res, HttpSuccess.Success());
   } catch (error) {
-    return makeResponse(res, error);
+    return makeResponse(res, HttpErrors.Internal(error));
   }
 }
 
@@ -153,7 +153,7 @@ async function postForgetAdmin(req, res) {
 
     return makeResponse(res, updated);
   } catch (error) {
-    return makeResponse(res, error);
+    return makeResponse(res, HttpErrors.Internal(error));
   }
 }
 
