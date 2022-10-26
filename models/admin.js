@@ -4,9 +4,9 @@ const { exists } = require("../Services/files");
 const Logger = require("../Services/logger");
 
 async function checkAdmin() {
-  let request = "SELECT * FROM Administrators";
+  let request = "SELECT * FROM Users WHERE role = $1";
   try {
-    let result = await pool.query(request);
+    let result = await pool.query(request, ["Administrator"]);
     return !!result.rows[0];
   } catch (error) {
     Logger(error);
@@ -15,8 +15,7 @@ async function checkAdmin() {
 }
 
 async function getAdmin(payload) {
-  let request =
-    "SELECT u.id, pseudo , email, password FROM Users AS u RIGHT JOIN Administrators AS a ON u.id = a.id WHERE email = $1";
+  let request = "SELECT u.id, pseudo , email, password FROM Users WHERE email = $1";
   try {
     let result = await pool.query(request, [payload.email]);
     return result.rows[0];
@@ -27,18 +26,14 @@ async function getAdmin(payload) {
 }
 
 async function create(payload) {
-  const requestOne = "INSERT INTO users(email,password) VALUES($1,$2) RETURNING id";
-  const requestTwo = "INSERT INTO administrators(id, pseudo) VALUES($1,$2) RETURNING pseudo";
+  const requestOne = "INSERT INTO users(email,password, role) VALUES($1,$2,$3) RETURNING id";
 
   try {
-    const resultOne = await pool.query(requestOne, [payload.email, payload.password]);
-    if (resultOne.rowCount > 0) {
-      const resultTwo = await pool.query(requestTwo, [resultOne.rows[0].id, payload.username]);
-      return {
-        userId: resultOne.rows[0].id,
-        username: resultTwo.rows[0].pseudo,
-      };
-    }
+    const resultOne = await pool.query(requestOne, [payload.email, payload.password, payload.role]);
+    return {
+      userId: resultOne.rows[0].id,
+      username: resultOne.rows[0].pseudo,
+    };
   } catch (error) {
     Logger(error);
     makeDbErrors(error);

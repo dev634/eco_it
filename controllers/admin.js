@@ -2,6 +2,8 @@ const AdminModel = require("../Models/admin");
 const InstructorModel = require("../Models/instructors");
 const StudentModel = require("../Models/students");
 const CoursesModel = require("../Models/courses");
+const UsersModel = require("../Models/users");
+const Logger = require("../Services/logger");
 const { sendPassword } = require("../Services/mailer");
 const {
   redirect,
@@ -22,12 +24,7 @@ dotenv.config();
 
 async function getAdmin(req, res) {
   try {
-    let instructors = await InstructorModel.getAll();
-    let students = await StudentModel.getAll();
-    let courses = await CoursesModel.getAll();
-    let averageCoursesPerInstructors = isNaN(Number(courses) / Number(instructors))
-      ? 0
-      : Math.floor(Number(courses) / Number(instructors));
+    const user = await UsersModel.getUserBy({ role: "Administrator" });
     const username = req.user.username;
 
     render(res, "admin", {
@@ -35,12 +32,12 @@ async function getAdmin(req, res) {
       pageTitle: "Administration",
       goBack: true,
       username,
-      instructorsNum: instructors.length,
-      studentsNum: students.length,
-      coursesNum: courses.length,
-      averageCoursesPerInstructors,
+      instructorsNum: 0,
+      studentsNum: 0,
+      coursesNum: 0,
     });
   } catch (error) {
+    Logger(error);
     makeResponse(res, error);
   }
 }
@@ -94,6 +91,7 @@ async function postAdmin(req, res) {
     const value = await authSchema.subscribe.validateAsync({ ...req.body });
     const max_age = Number(process.env.JWT_ACCESS_TOKEN_EXPIRE) * 1000;
     req.body.password = await hashPassword(req.body.password);
+    req.body.role = "Administrator";
     const result = await AdminModel.create(req.body);
     const accessToken = await genAccessToken(result.userId, {
       username: result.username,
@@ -101,6 +99,7 @@ async function postAdmin(req, res) {
     makeTokenCookie(res, accessToken);
     return makeResponse(res, HttpSuccess.Created());
   } catch (error) {
+    console.log(error);
     if (error.isJoi) {
       const details = { ...error.details[0] };
       if (details.type === "string.pattern.base") {

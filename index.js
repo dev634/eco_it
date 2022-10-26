@@ -1,3 +1,4 @@
+require("./extensions/array.js");
 const express = require("express");
 const { engine } = require("express-handlebars");
 const hbsSettings = require("./constantes/hbsSettings");

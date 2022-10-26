@@ -22,7 +22,6 @@ async function updateUser(payload) {
   try {
     let requestOne = "";
     let requestTwo = "";
-    let result = "";
     if (payload.role === "administrator") {
       requestOne = `UPDATE users SET email = $2, password = $3 WHERE users.id = $1`;
       requestTwo = `UPDATE administrators SET pseudo = $2, role = $3 WHERE administrators.id = $1`;
@@ -52,8 +51,8 @@ async function updateUser(payload) {
       await pool.query(requestTwo, [id, payload.pseudo]);
     }
 
-    const result = await getUser(payload.id);
-    return result.rows[0];
+    const resultUser = await getUser(payload.id);
+    return resultUser.rows[0];
   } catch (error) {
     Logger(error);
     makeDbErrors(error);
