@@ -2,6 +2,9 @@ const pool = require("../Services/db");
 const { makeDbErrors } = require("../helpers/errors");
 const { capitalize } = require("../helpers/strings");
 const Logger = require("../Services/logger");
+const dbCredentials = require("../constantes/dbCredentials");
+const Database = require("../Services/database");
+Database.init(dbCredentials);
 
 async function getUserBy(payload, error) {
   try {
@@ -43,6 +46,8 @@ async function getUserBy(payload, error) {
       }
       userRequest += `${elmt} = $${idx + 1} AND`;
     });
+
+    await Database.getBy("test", "users");
     const result = await pool.query(userRequest, values);
     return result.rows;
   } catch (error) {
