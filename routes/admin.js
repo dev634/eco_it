@@ -23,7 +23,7 @@ router.get(
   "/admin",
   Authentication.checkAdminMiddleware,
   Authentication.checkCookieMiddleware,
-  Authentication.checkRole(["administrator"], () => res.redirect("/")),
+  Authentication.checkRole(["Administrator"], () => res.redirect("/")),
   AdminController.getAdmin
 );
 

@@ -63,17 +63,7 @@ HttpErrors.Internal = function (msg) {
   return new HttpErrors(500, "Internal Error");
 };
 
-makeDbErrors = function (error, logger) {
-  if (["dev", "development"].includes(process.env.NODE_ENV)) {
-    displayError(error);
-  }
-
-  if (["prod", "production"].includes(process.env.NODE_ENV) && logger) {
-    logger(
-      `Code : ${error.code} | Detail : ${error.detail} | Table : ${error.table} | Constraint : ${error.constraint}`
-    );
-  }
-
+makeDbErrors = function (error) {
   if (error.code === "23505") {
     throw {
       status: 409,
@@ -83,7 +73,7 @@ makeDbErrors = function (error, logger) {
 
   throw {
     status: 500,
-    message: "Something went wrong ",
+    message: "Something went wrong",
   };
 };
 

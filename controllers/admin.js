@@ -23,8 +23,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 async function getAdmin(req, res) {
+  console.log("test");
   try {
-    const user = await UsersModel.getUserBy({ role: "Administrator" });
+    const user = await UsersModel.getUserBy({ id: req.user.userId, role: "Administrator" });
     const username = req.user.username;
 
     render(res, "admin", {

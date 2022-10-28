@@ -46,7 +46,7 @@ async function checkCookieMiddleware(req, res, next) {
 }
 
 async function checkRoleMiddleware(req, res, next, role) {
-  const user = await getUser(req.user.userId, "Administrators", `${role}_id`);
+  const user = await getUserBy({ id: req.user.userId, role: "Administrator" });
 
   if (!role.includes(user.role)) {
     res.redirect("/admin/auth/connect");
@@ -59,7 +59,8 @@ async function checkRoleMiddleware(req, res, next, role) {
 function checkRole(roles, action) {
   return async function (req, res, next, roles, action) {
     try {
-      const user = await getUser(req.user.userId, roles.pop());
+      const user = await getUserBy({ id: req.user.userId });
+
       if (!roles.includes(user.role)) {
         throw { status: "500", message: "test" };
       }
