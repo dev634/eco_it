@@ -2,12 +2,12 @@ const { verifyAccessToken, getAudience } = require("../helpers/jwt_help");
 const { createUser } = require("../helpers/request");
 const { redirect } = require("../helpers/server");
 const { checkCookie } = require("../helpers/cookies");
-const { getUserBy } = require("../models/users");
+const AdminModel = require("../models/admin");
 const { HttpErrors } = require("../helpers/errors");
 
 async function checkAdminMiddleware(req, res, next) {
   try {
-    const adminExists = await getUserBy({ role: "Administrator" });
+    const adminExists = await AdminModel.getAdmin({ role: "Administrator" });
     if (adminExists.length === 0) {
       res.redirect("/admin/auth/subscribe");
       return;

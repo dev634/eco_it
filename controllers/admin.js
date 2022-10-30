@@ -1,8 +1,7 @@
-const AdminModel = require("../Models/admin");
-const InstructorModel = require("../Models/instructors");
-const StudentModel = require("../Models/students");
-const CoursesModel = require("../Models/courses");
-const UsersModel = require("../Models/users");
+const AdminModel = require("../models/admin");
+const InstructorModel = require("../models/instructors");
+const StudentModel = require("../models/students");
+const CoursesModel = require("../models/courses");
 const Logger = require("../Services/logger");
 const { sendPassword } = require("../Services/mailer");
 const {
@@ -23,16 +22,13 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 async function getAdmin(req, res) {
-  console.log("test");
   try {
-    const user = await UsersModel.getUserBy({ id: req.user.userId, role: "Administrator" });
-    const username = req.user.username;
-
+    const user = await AdminModel.getAdmin({ id: req.user.userId, role: "Administrator" });
     render(res, "admin", {
       layout: "admin",
       pageTitle: "Administration",
       goBack: true,
-      username,
+      username: user[0].pseudo,
       instructorsNum: 0,
       studentsNum: 0,
       coursesNum: 0,
@@ -44,26 +40,33 @@ async function getAdmin(req, res) {
 }
 
 async function adminConnect(req, res) {
-  render(res, "connect", {
-    pageTitle: "Connection",
-    layout: "admin",
-    goBack: true,
-  });
+  try {
+    render(res, "connect", {
+      pageTitle: "Connection",
+      layout: "admin",
+      goBack: true,
+    });
+  } catch (error) {
+    Logger(error);
+  }
 }
 
 async function adminSubscribe(req, res) {
-  const adminExists = await AdminModel.checkAdmin();
+  try {
+    const adminExists = await AdminModel.checkAdmin();
 
-  if (req.originalUrl === "/admin/auth/subscribe" && adminExists) {
-    res.redirect("/admin/auth/connect");
-    return;
+    if (req.originalUrl === "/admin/auth/subscribe" && adminExists) {
+      res.redirect("/admin/auth/connect");
+      return;
+    }
+    render(res, "admin-subscribe", {
+      pageTitle: "Inscription",
+      layout: "admin",
+      goBack: true,
+    });
+  } catch (error) {
+    Logger(error);
   }
-
-  render(res, "admin-subscribe", {
-    pageTitle: "Inscription",
-    layout: "admin",
-    goBack: true,
-  });
 }
 
 async function adminForget(req, res) {
@@ -100,7 +103,6 @@ async function postAdmin(req, res) {
     makeTokenCookie(res, accessToken);
     return makeResponse(res, HttpSuccess.Created());
   } catch (error) {
-    console.log(error);
     if (error.isJoi) {
       const details = { ...error.details[0] };
       if (details.type === "string.pattern.base") {

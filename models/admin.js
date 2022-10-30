@@ -2,6 +2,9 @@ const pool = require("../Services/db");
 const { makeDbErrors } = require("../helpers/errors");
 const { exists } = require("../Services/files");
 const Logger = require("../Services/logger");
+const dbCredentials = require("../constantes/dbCredentials");
+const Database = require("../Services/database");
+Database.init(dbCredentials, "users", Logger, null, "public");
 
 async function checkAdmin() {
   let request = "SELECT * FROM Users WHERE role = $1";
@@ -15,10 +18,9 @@ async function checkAdmin() {
 }
 
 async function getAdmin(payload) {
-  let request = "SELECT u.id, pseudo , email, password FROM Users WHERE email = $1";
   try {
-    let result = await pool.query(request, [payload.email]);
-    return result.rows[0];
+    let result = await Database.getBy(payload, "users", ["id", "pseudo", "email"], null);
+    return result;
   } catch (error) {
     Logger(error);
     makeDbErrors(error);
@@ -26,10 +28,16 @@ async function getAdmin(payload) {
 }
 
 async function create(payload) {
-  const requestOne = "INSERT INTO users(email,password, role) VALUES($1,$2,$3) RETURNING id";
+  const requestOne =
+    "INSERT INTO users(email,password, role, pseudo) VALUES($1,$2,$3,$4) RETURNING id";
 
   try {
-    const resultOne = await pool.query(requestOne, [payload.email, payload.password, payload.role]);
+    const resultOne = await pool.query(requestOne, [
+      payload.email,
+      payload.password,
+      payload.role,
+      payload.username,
+    ]);
     return {
       userId: resultOne.rows[0].id,
       username: resultOne.rows[0].pseudo,

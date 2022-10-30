@@ -8,11 +8,136 @@ function Database() {
   let tablesList = null;
   let fields = [];
   let logger = null;
-  let makeDbErrors = null;
   return pool;
 }
 
-Database.init = async function (credentials, table, logger, makeDbErrors, schema) {
+function isFunction(argName, arg) {
+  if (typeof arg !== "function" && arg !== null) {
+    throw new Error(`${argName} should be a function or null`);
+  }
+  return true;
+}
+
+function isObject(argName, arg) {
+  if (typeof arg !== "object" && !arg instanceof Object) {
+    throw new Error(`${argName} should be an object`);
+  }
+  return true;
+}
+
+function isArray(argName, arg) {
+  if (typeof arg === "object" && !arg instanceof Array) {
+    throw new Error(`${argName} should be an Array`);
+  }
+  return true;
+}
+
+function isString(argName, arg) {
+  if (typeof arg !== "string") {
+    throw new Error(`${argName} should be an string`);
+  }
+  return true;
+}
+
+function checkResponseFields(responseFields, error) {
+  // test if the array of responseFields is an array of string
+  if (responseFields instanceof Array && responseFields.length > 0) {
+    let testResponseFields = responseFields.every((elmt) => typeof elmt === "string");
+    if (!testResponseFields) {
+      throw "responseFields should be an array of strings";
+      return;
+    }
+
+    if (!this.fields.includesAll(responseFields)) {
+      throw "the responseFields list is not compliant";
+      return;
+    }
+  }
+}
+
+function checkPayload(payload, error) {
+  // test if payload object exists
+  if (!payload) {
+    if (error) {
+      throw error;
+    }
+
+    throw "The payload object is required";
+  }
+}
+
+function checkTable(table, error) {
+  // test if all the table are here
+  if (!table) {
+    if (error) {
+      throw error;
+    }
+
+    throw "The table argument is required";
+  }
+}
+
+function checkIfTableExists(table, error) {
+  // compare if the table does exists in the database
+  if (!this.tablesList.includes(table)) {
+    if (error) {
+      throw error;
+    }
+
+    throw "This table doesn't exists in the database";
+  }
+}
+
+function checkTableFields(payload, error) {
+  // compare the payload property names with the fields of a given table
+  if (!this.fields.includesAll(Object.keys(payload))) {
+    if (error) {
+      throw error;
+    }
+
+    throw "Something wrong with the payload and the fields";
+  }
+}
+
+function makeSelectRequest(payload, table, responseFields) {
+  // Build the request
+  let userRequest = "SELECT ";
+  userRequest += responseFields.toString() + " ";
+  userRequest += `FROM ${table} WHERE `;
+
+  Object.keys(payload).map((elmt, idx) => {
+    if (idx === Object.keys(payload).length - 1) {
+      userRequest += `${elmt} = $${idx + 1}`;
+      return;
+    }
+    userRequest += `${elmt} = $${idx + 1} AND `;
+  });
+  return userRequest;
+}
+
+function makeValuesList(payload) {
+  return Object.values(payload);
+}
+
+function checkArgsLength(args, length) {
+  if (Object.values(args).length !== length) {
+    throw new Error(`Arguments numbers should be equal to ${length}`);
+  }
+  return true;
+}
+
+function checkAllArguments(argsNames, args, tests = [], length) {
+  checkArgsLength(args, length);
+  return Object.values(args).every((elmt, idx) => {
+    return tests[idx](argsNames[idx], elmt);
+  });
+}
+
+function checkGetByArguments(argsNames, args, length) {
+  return true;
+}
+
+Database.prototype.init = async function (credentials, table, logger, makeDbErrors, schema) {
   // initialize the database query builder
   let tablesRequest = `SELECT * FROM information_schema.tables WHERE table_schema = '${schema}'`;
   let fieldsRequest = `SELECT * FROM ${table} WHERE false`;
@@ -28,85 +153,47 @@ Database.init = async function (credentials, table, logger, makeDbErrors, schema
   this.fields = fieldsResult.fields.map((elmt) => elmt.name);
 };
 
-Database.getBy = async function (payload, table, error) {
-  console.log(payload);
+Database.prototype.getBy = async function (payload, table, responseFields = [], error = null) {
   try {
-    let userRequest = "SELECT ";
+    checkAllArguments.call(
+      this,
+      ["payload", "table", "responseFields", "error"],
+      arguments,
+      [isObject, isString, isArray, isFunction],
+      4
+    );
 
-    // test if all the payload are here
-    if (!payload) {
-      if (error) {
-        throw error;
-      }
-
-      throw {
-        status: 500,
-        message: "The payload object is required",
-      };
+    if (responseFields instanceof Array && responseFields.length === 0) {
+      userRequest += "* ";
     }
 
-    // test if all the table are here
-    if (!table) {
-      if (error) {
-        throw error;
-      }
+    checkResponseFields.call(this, responseFields, error);
+    checkPayload.call(this, payload, error);
+    checkTable.call(this, table, error);
+    checkIfTableExists.call(this, table, error);
+    checkTableFields.call(this, payload, error);
 
-      throw {
-        status: 500,
-        message: "The table argument is required",
-      };
-    }
-
-    // compare if the table does exists in the database
-    if (!this.tablesList.includes(table)) {
-      if (error) {
-        throw error;
-      }
-
-      throw {
-        status: 500,
-        message: "This table doesn't exists in the database",
-      };
-    }
-
-    // compare the payload property names with the fields of a given table
-    if (!this.fields.includesAll(Object.keys(payload))) {
-      if (error) {
-        throw error;
-      }
-
-      throw {
-        status: 500,
-        message: "Something wrong with the payload and the fields",
-      };
-    }
-
-    // get an array of values from the payload
-    const values = Object.values(payload);
-
-    // build the string request
-    userRequest += Object.keys(payload).toString() + " ";
-    userRequest += "FROM users WHERE ";
-
-    Object.keys(payload).map((elmt, idx) => {
-      if (idx === Object.keys(payload).length - 1) {
-        userRequest += `${elmt} = $${idx + 1}`;
-        return;
-      }
-      userRequest += `${elmt} = $${idx + 1} AND `;
-    });
-
-    const result = await this.pool.query(userRequest, values);
+    const selectRequest = makeSelectRequest.call(this, payload, table, responseFields);
+    const values = makeValuesList.call(this, payload);
+    const result = await this.pool.query(selectRequest, values);
     return result.rows;
   } catch (error) {
     throw error;
   }
 };
 
-Database.create = async function () {};
+Database.create = async function (payload, table, responseFields, error) {
+  try {
+    let insertRequest = "INSERT INTO ";
+    const result = await this.pool.query(insertRequest, values);
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
 
 Database.update = async function (payload, table, error) {};
 
 Database.delete = async function (payload, table, error) {};
 
-module.exports = Database;
+module.exports = new Database();
