@@ -63,7 +63,7 @@ export function checkAdminSignupForm(form, max) {
       changeFieldToInvalid(form[i], `${form[i].id} is required`);
     }
 
-    if (form[i].id === "username") {
+    if (form[i].id === "pseudo") {
       if (form[i].value.length > 0 && !checkLength(form[i].value, 3, 32)) {
         changeFieldToInvalid(form[i], `Should contain between 3 and 32 letters`);
         continue;

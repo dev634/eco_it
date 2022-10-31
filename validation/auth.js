@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 module.exports.subscribe = Joi.object({
-  username: Joi.string()
+  pseudo: Joi.string()
     .required()
     .min(3)
     .max(32)

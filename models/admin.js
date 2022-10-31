@@ -28,19 +28,12 @@ async function getAdmin(payload) {
 }
 
 async function create(payload) {
-  const requestOne =
-    "INSERT INTO users(email,password, role, pseudo) VALUES($1,$2,$3,$4) RETURNING id";
-
   try {
-    const resultOne = await pool.query(requestOne, [
-      payload.email,
-      payload.password,
-      payload.role,
-      payload.username,
-    ]);
+    delete payload.password_confirm;
+    const result = await Database.create(payload, "users", ["id", "pseudo"], null);
     return {
-      userId: resultOne.rows[0].id,
-      username: resultOne.rows[0].pseudo,
+      userId: result[0].id,
+      username: result[0].pseudo,
     };
   } catch (error) {
     Logger(error);

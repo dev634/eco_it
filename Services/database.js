@@ -64,6 +64,10 @@ function checkPayload(payload, error) {
 
     throw "The payload object is required";
   }
+
+  if (Object.keys(payload).length === 0) {
+    throw "The payload object cannot be empty";
+  }
 }
 
 function checkTable(table, error) {
@@ -99,10 +103,17 @@ function checkTableFields(payload, error) {
   }
 }
 
+// make select request
 function makeSelectRequest(payload, table, responseFields) {
-  // Build the request
   let userRequest = "SELECT ";
-  userRequest += responseFields.toString() + " ";
+  if (responseFields.length === 0) {
+    userRequest += "* ";
+  }
+
+  if (responseFields.length > 0) {
+    userRequest += responseFields.toString() + " ";
+  }
+
   userRequest += `FROM ${table} WHERE `;
 
   Object.keys(payload).map((elmt, idx) => {
@@ -113,6 +124,65 @@ function makeSelectRequest(payload, table, responseFields) {
     userRequest += `${elmt} = $${idx + 1} AND `;
   });
   return userRequest;
+}
+
+// make insert request
+function makeInsertRequest(payload, table, responseFields) {
+  if (Object.keys(payload).includes("id")) {
+    throw "payload cannot contain id field";
+  }
+
+  let insertRequest = "INSERT INTO ";
+  insertRequest += `${table}(${Object.keys(payload)})`;
+  insertRequest += `VALUES(`;
+  insertRequest += Object.keys(payload).map((elmt, idx) => {
+    return `$${idx + 1}`;
+  });
+  insertRequest += `)` + " ";
+  if (responseFields.length === 0) {
+    insertRequest += "RETURNING *";
+  }
+  if (responseFields.length > 0) {
+    insertRequest += `RETURNING ${responseFields.toString()}`;
+  }
+  return [insertRequest, Object.values(payload)];
+}
+
+// make update request
+function makeUpdateRequest(payload, table, where, responseFields) {
+  if (!where) {
+    throw "where arguments is required";
+  }
+
+  if (Object.keys(payload).includes("id")) {
+    throw "payload cannot contain id field";
+  }
+
+  let updateRequest = `UPDATE ${table} SET `;
+  Object.entries(payload).map((elmt, idx) => {
+    if (elmt === "id") {
+      return;
+    }
+    updateRequest += `${elmt[0]} = $${idx + 1},` + " ";
+  });
+
+  updateRequest += "WHERE ";
+  Object.entries(where).map((elmt, idx) => {
+    if (idx + 1 === Object.keys(where).length) {
+      return (updateRequest += `${elmt[0]} ${elmt[1]}`);
+    }
+    updateRequest += `${elmt[0]} ${elmt[1]} AND`;
+  });
+
+  if (responseFields.length === 0) {
+    updateRequest += `RETURNING *`;
+  }
+
+  if (responseFields.length > 0) {
+    updateRequest += `RETURNING ${responseFields.toString()}`;
+  }
+
+  return [updateRequest, Object.values(payload)];
 }
 
 function makeValuesList(payload) {
@@ -163,10 +233,6 @@ Database.prototype.getBy = async function (payload, table, responseFields = [], 
       4
     );
 
-    if (responseFields instanceof Array && responseFields.length === 0) {
-      userRequest += "* ";
-    }
-
     checkResponseFields.call(this, responseFields, error);
     checkPayload.call(this, payload, error);
     checkTable.call(this, table, error);
@@ -182,17 +248,56 @@ Database.prototype.getBy = async function (payload, table, responseFields = [], 
   }
 };
 
-Database.create = async function (payload, table, responseFields, error) {
+Database.prototype.create = async function (payload, table, responseFields = [], error = null) {
   try {
-    let insertRequest = "INSERT INTO ";
-    const result = await this.pool.query(insertRequest, values);
+    checkAllArguments.call(
+      this,
+      ["payload", "table", "responseFields", "error"],
+      arguments,
+      [isObject, isString, isArray, isFunction],
+      4
+    );
+    checkResponseFields.call(this, responseFields, error);
+    checkPayload.call(this, payload, error);
+    checkTable.call(this, table, error);
+    checkIfTableExists.call(this, table, error);
+    checkTableFields.call(this, payload, error);
+    let request = makeInsertRequest.call(this, payload, table, responseFields);
+    const result = await this.pool.query(request[0], request[1]);
     return result.rows;
   } catch (error) {
     throw error;
   }
 };
 
-Database.update = async function (payload, table, error) {};
+Database.prototype.update = async function (
+  payload,
+  table,
+  where,
+  responseFields = [],
+  error = null
+) {
+  try {
+    checkAllArguments.call(
+      this,
+      ["payload", "table", "where", "responseFields", "error"],
+      arguments,
+      [isObject, isString, isObject, isArray, isFunction],
+      4
+    );
+    checkResponseFields.call(this, responseFields, error);
+    checkPayload.call(this, payload, error);
+    checkTable.call(this, table, error);
+    checkIfTableExists.call(this, table, error);
+    checkTableFields.call(this, payload, error);
+    checkTableFields.call(this, where, error);
+    let request = makeUpdateRequest(payload, table, where, responseFields);
+    const result = await this.pool.query(request[0], request[1]);
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
 
 Database.delete = async function (payload, table, error) {};
 
