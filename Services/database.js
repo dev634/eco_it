@@ -185,6 +185,32 @@ function makeUpdateRequest(payload, table, where, responseFields) {
   return [updateRequest, Object.values(payload)];
 }
 
+function makeDeleteRequest(table, where, responseFields) {
+  if (!where) {
+    throw "where arguments is required";
+  }
+
+  let deleteRequest = `DELETE FROM ${table} WHERE` + " ";
+
+  Object.entries(where).map((field, idx) => {
+    if (idx + 1 === Object.keys(field).length) {
+      deleteRequest += `${field[0]} ${field[1].op} ${field[1].value}`;
+      return;
+    }
+
+    deleteRequest += `${field[0]} ${field[1].op} ${field[1].value} AND `;
+  });
+
+  if (responseFields.length === 0) {
+    deleteRequest += `RETURNING *`;
+  }
+
+  if (responseFields.length > 0) {
+    deleteRequest += `RETURNING ${responseFields.toString()}`;
+  }
+  return [deleteRequest, Object.values(where)];
+}
+
 function makeValuesList(payload) {
   return Object.values(payload);
 }
@@ -283,7 +309,7 @@ Database.prototype.update = async function (
       ["payload", "table", "where", "responseFields", "error"],
       arguments,
       [isObject, isString, isObject, isArray, isFunction],
-      4
+      5
     );
     checkResponseFields.call(this, responseFields, error);
     checkPayload.call(this, payload, error);
@@ -299,6 +325,26 @@ Database.prototype.update = async function (
   }
 };
 
-Database.delete = async function (payload, table, error) {};
+Database.delete = async function (table, where, responseFields = [], error = null) {
+  try {
+    checkAllArguments.call(
+      this,
+      ["payload", "table", "where", "responseFields", "error"],
+      arguments,
+      [isObject, isString, isObject, isArray, isFunction],
+      4
+    );
+    checkResponseFields.call(this, responseFields, error);
+    checkPayload.call(this, payload, error);
+    checkTable.call(this, table, error);
+    checkIfTableExists.call(this, table, error);
+    checkTableFields.call(this, where, error);
+    let request = makeDeleteRequest(table, where, responseFields);
+    const result = await this.pool.query(request[0], request[1]);
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
 
 module.exports = new Database();
