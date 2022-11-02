@@ -10,4 +10,11 @@ router.get(
   ProfileController.getUser
 );
 
+router.patch(
+  "/profile",
+  Authentication.checkCookieMiddleware,
+  Authentication.checkRole(["administrator"], () => res.redirect("/")),
+  ProfileController.updateUser
+);
+
 module.exports = router;

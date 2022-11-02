@@ -154,10 +154,6 @@ function makeUpdateRequest(payload, table, where, responseFields) {
     throw "where arguments is required";
   }
 
-  if (Object.keys(payload).includes("id")) {
-    throw "payload cannot contain id field";
-  }
-
   let updateRequest = `UPDATE ${table} SET `;
   Object.entries(payload).map((elmt, idx) => {
     if (elmt === "id") {

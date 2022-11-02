@@ -87,3 +87,23 @@ export async function logout() {
     return error;
   }
 }
+
+export async function updateProfile(verb = "GET", url, datas = null, action = null) {
+  let form = null;
+  let payload = {};
+  try {
+    payload.method = verb;
+    if (form) {
+      form = createFormData(datas);
+      payload.body = form;
+    }
+    let result = await fetch(`${APP_SCHEME}://${APP_URL}:${APP_PORT}${url}`, { ...payload });
+    let response = await result.json();
+    if (action) {
+      return action();
+    }
+    return response;
+  } catch (error) {
+    return error;
+  }
+}
