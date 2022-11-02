@@ -322,7 +322,7 @@ Database.prototype.update = async function (
   }
 };
 
-Database.delete = async function (table, where, responseFields = [], error = null) {
+Database.prototype.delete = async function (table, where, responseFields = [], error = null) {
   try {
     checkAllArguments.call(
       this,

@@ -26,6 +26,7 @@ async function getUser(req, res, next) {
 async function updateUser(req, res, next) {
   try {
     const value = await profileSchema.update.validateAsync({ ...req.body });
+    delete req.body.confirm_password;
     const result = await Database.update({ id: req.user.userId });
     return result;
   } catch (error) {
