@@ -6,11 +6,11 @@ Database.init(dbCredentials, "users", Logger, null, "public");
 
 async function getUser(payload, responseFields) {
   try {
-    let result = await Database.getBy(payload, "users", responseFields);
+    let result = await Database.getBy(payload, "users", responseFields, null);
     return result;
   } catch (error) {
     Logger(error);
-    makeDberrors(error);
+    makeDbErrors(error);
   }
 }
 

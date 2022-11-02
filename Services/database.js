@@ -192,13 +192,14 @@ function makeDeleteRequest(table, where, responseFields) {
 
   let deleteRequest = `DELETE FROM ${table} WHERE` + " ";
 
-  Object.entries(where).map((field, idx) => {
+  let values = Object.entries(where).map((field, idx) => {
     if (idx + 1 === Object.keys(field).length) {
-      deleteRequest += `${field[0]} ${field[1].op} ${field[1].value}`;
-      return;
+      deleteRequest += `${field[0]} ${field[1].op} $${idx + 1}`;
+      return fields[1].value;
     }
 
-    deleteRequest += `${field[0]} ${field[1].op} ${field[1].value} AND `;
+    deleteRequest += `${field[0]} ${field[1].op} ${idx + 1} AND `;
+    return fields[1].value;
   });
 
   if (responseFields.length === 0) {
@@ -208,7 +209,7 @@ function makeDeleteRequest(table, where, responseFields) {
   if (responseFields.length > 0) {
     deleteRequest += `RETURNING ${responseFields.toString()}`;
   }
-  return [deleteRequest, Object.values(where)];
+  return [deleteRequest, values];
 }
 
 function makeValuesList(payload) {

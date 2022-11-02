@@ -118,14 +118,13 @@ async function postAdmin(req, res) {
 async function postConnectAdmin(req, res) {
   try {
     const value = await authSchema.connect.validateAsync({ ...req.body });
-    const result = await AdminModel.getAdmin(req.body);
-    const passCompared = await comparePassword(req.body.password, result.password);
-
+    const { email, password } = req.body;
+    const result = await AdminModel.getAdmin({ email });
+    const passCompared = await comparePassword(password, result[0].password);
     if (!passCompared) {
       throw HttpErrors.Unauthorized();
     }
-
-    const token = await genAccessToken(result.id, { username: result.pseudo });
+    const token = await genAccessToken(result[0].id, { username: result[0].pseudo });
     makeTokenCookie(res, token);
     return makeResponse(res, HttpSuccess.Success());
   } catch (error) {

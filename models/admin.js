@@ -19,7 +19,7 @@ async function checkAdmin() {
 
 async function getAdmin(payload) {
   try {
-    let result = await Database.getBy(payload, "users", ["id", "pseudo", "email"], null);
+    let result = await Database.getBy(payload, "users", ["id", "pseudo", "email", "password"], null);
     return result;
   } catch (error) {
     Logger(error);
@@ -57,9 +57,20 @@ async function update(payload) {
   }
 }
 
+async function deleteUser(payload) {
+  try {
+    let result = await Database.delete("users", { ...payload, role: "Administrator" }, ["pseudo"]);
+    return result;
+  } catch (error) {
+    Logger(error);
+    makeDbErrors(error);
+  }
+}
+
 module.exports = {
   checkAdmin,
   create,
   getAdmin,
   update,
+  deleteUser,
 };
