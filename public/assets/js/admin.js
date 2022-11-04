@@ -1,5 +1,5 @@
 import { checkAdminSignupForm, checkAdminSigninForm, checkAdminForgetForm } from "./forms.js";
-import { postForm, logout } from "./api.js";
+import { postForm, logout, updateProfile } from "./api.js";
 
 function makeDatasFromForm(form) {
   const datas = {};
@@ -43,7 +43,14 @@ window.onload = function (e) {
 
       button.setAttribute("disabled", "");
       let datas = makeDatasFromForm(form);
-      let result = await postForm(datas, "/admin/auth/" + form.id);
+      let result = null;
+      if (["forget", "connect", "register"].includes(form.id)) {
+        result = await postForm(datas, "/admin/auth/" + form.id);
+      }
+
+      if (form.id === "profile") {
+        result = await updateProfile("PATCH", "/admin/profile", datas);
+      }
       loader.classList.remove("hidden");
 
       if (result && result.status >= 200 && result.status < 400) {
@@ -65,7 +72,7 @@ window.onload = function (e) {
         return;
       }
 
-      location.reload();
+      // location.reload();
     });
 
     form.addEventListener("input", function (e) {

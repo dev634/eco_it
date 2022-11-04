@@ -154,20 +154,30 @@ function makeUpdateRequest(payload, table, where, responseFields) {
     throw "where arguments is required";
   }
 
+  if (payload.id) {
+    delete payload.id;
+  }
+
   let updateRequest = `UPDATE ${table} SET `;
   Object.entries(payload).map((elmt, idx) => {
     if (elmt === "id") {
       return;
     }
-    updateRequest += `${elmt[0]} = $${idx + 1},` + " ";
+    if (idx + 1 === Object.keys(payload).length) {
+      updateRequest += `${elmt[0]} = $${idx + 1} `;
+      return;
+    }
+    updateRequest += `${elmt[0]} = $${idx + 1}, `;
+    return;
   });
 
   updateRequest += "WHERE ";
   Object.entries(where).map((elmt, idx) => {
     if (idx + 1 === Object.keys(where).length) {
-      return (updateRequest += `${elmt[0]} ${elmt[1]}`);
+      updateRequest += `${elmt[0]} = ${elmt[1]} `;
+      return;
     }
-    updateRequest += `${elmt[0]} ${elmt[1]} AND`;
+    updateRequest += `${elmt[0]} = ${elmt[1]} AND `;
   });
 
   if (responseFields.length === 0) {
@@ -177,7 +187,6 @@ function makeUpdateRequest(payload, table, where, responseFields) {
   if (responseFields.length > 0) {
     updateRequest += `RETURNING ${responseFields.toString()}`;
   }
-
   return [updateRequest, Object.values(payload)];
 }
 

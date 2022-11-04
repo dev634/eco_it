@@ -93,10 +93,11 @@ export async function updateProfile(verb = "GET", url, datas = null, action = nu
   let payload = {};
   try {
     payload.method = verb;
-    if (form) {
+    if (datas) {
       form = createFormData(datas);
       payload.body = form;
     }
+
     let result = await fetch(`${APP_SCHEME}://${APP_URL}:${APP_PORT}${url}`, { ...payload });
     let response = await result.json();
     if (action) {

@@ -19,7 +19,12 @@ async function checkAdmin() {
 
 async function getAdmin(payload) {
   try {
-    let result = await Database.getBy(payload, "users", ["id", "pseudo", "email", "password"], null);
+    let result = await Database.getBy(
+      payload,
+      "users",
+      ["id", "pseudo", "email", "password"],
+      null
+    );
     return result;
   } catch (error) {
     Logger(error);
@@ -42,15 +47,9 @@ async function create(payload) {
 }
 
 async function update(payload) {
-  let requestOne = "UPDATE users SET email = $1, password = $2 WHERE id = $3";
-  let requestTwo = "UPDATE administrators SET pseudo = $1 WHERE id = $2";
   try {
-    await pool.query(requestOne, [payload.email, payload.password, payload.id]);
-    await pool.query(requestTwo, [payload.pseudo, payload.id]);
-    return {
-      status: 200,
-      message: "Updated successfully",
-    };
+    let result = Database.update(payload, "users", { id: payload.id }, ["id", "pseudo"], null);
+    return result;
   } catch (error) {
     Logger(error);
     makeDbErrors(error);
