@@ -20,4 +20,11 @@ router.patch(
   ProfileController.updateUser
 );
 
+router.delete(
+  "/profile",
+  Authentication.checkCookieMiddleware,
+  Authentication.checkRole(["administrator"], () => res.redirect("/")),
+  ProfileController.deleteUser
+);
+
 module.exports = router;

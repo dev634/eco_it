@@ -56,9 +56,14 @@ async function update(payload) {
   }
 }
 
-async function deleteUser(payload) {
+async function deleteAdmin(payload) {
   try {
-    let result = await Database.delete("users", { ...payload, role: "Administrator" }, ["pseudo"]);
+    let result = await Database.delete(
+      "users",
+      { ...payload, role: { op: "=", value: "administrator" } },
+      ["pseudo"],
+      null
+    );
     return result;
   } catch (error) {
     Logger(error);
@@ -71,5 +76,5 @@ module.exports = {
   create,
   getAdmin,
   update,
-  deleteUser,
+  deleteAdmin,
 };

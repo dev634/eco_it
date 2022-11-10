@@ -48,7 +48,18 @@ async function updateUser(req, res, next) {
   }
 }
 
+async function deleteUser(req, res, next) {
+  try {
+    const result = await AdminModel.deleteAdmin({ id: { op: "=", value: req.user.userId } });
+    return makeResponse(res, HttpSuccess.Deleted());
+  } catch (error) {
+    Logger(error);
+    return makeResponse(res, HttpErrors.BadRequest(res, error));
+  }
+}
+
 module.exports = {
   getUser,
   updateUser,
+  deleteUser,
 };

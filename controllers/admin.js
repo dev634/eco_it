@@ -15,7 +15,7 @@ const {
 const { genAccessToken, verifyAccessToken } = require("../helpers/jwt_help");
 const authSchema = require("../validation/auth");
 const { HttpErrors, errorsHandler } = require("../helpers/errors");
-const { HttpSuccess } = require("../helpers/success");
+const HttpSuccess = require("../helpers/success");
 const { makeTokenCookie } = require("../helpers/cookies");
 const { makeResponse } = require("../helpers/response");
 const dotenv = require("dotenv");
@@ -23,7 +23,7 @@ dotenv.config();
 
 async function getAdmin(req, res) {
   try {
-    const user = await AdminModel.getAdmin({ id: req.user.userId, role: "Administrator" });
+    const user = await AdminModel.getAdmin({ id: req.user.userId, role: "administrator" });
     render(res, "admin", {
       layout: "admin",
       pageTitle: "Administration",
@@ -95,7 +95,7 @@ async function postAdmin(req, res) {
     const value = await authSchema.subscribe.validateAsync({ ...req.body });
     const max_age = Number(process.env.JWT_ACCESS_TOKEN_EXPIRE) * 1000;
     req.body.password = await hashPassword(req.body.password);
-    req.body.role = "Administrator";
+    req.body.role = "administrator";
     const result = await AdminModel.create(req.body);
     const accessToken = await genAccessToken(result.userId, {
       username: result.username,
@@ -110,7 +110,6 @@ async function postAdmin(req, res) {
       }
       return makeResponse(res, HttpErrors.BadRequest(details.message));
     }
-
     return makeResponse(res, HttpErrors.Internal(error));
   }
 }

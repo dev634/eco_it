@@ -196,15 +196,14 @@ function makeDeleteRequest(table, where, responseFields) {
   }
 
   let deleteRequest = `DELETE FROM ${table} WHERE` + " ";
-
   let values = Object.entries(where).map((field, idx) => {
     if (idx + 1 === Object.keys(field).length) {
-      deleteRequest += `${field[0]} ${field[1].op} $${idx + 1}`;
-      return fields[1].value;
+      deleteRequest += `${field[0]} ${field[1].op} $${idx + 1} `;
+      return field[1].value;
     }
 
-    deleteRequest += `${field[0]} ${field[1].op} ${idx + 1} AND `;
-    return fields[1].value;
+    deleteRequest += `${field[0]} ${field[1].op} $${idx + 1} AND `;
+    return field[1].value;
   });
 
   if (responseFields.length === 0) {
@@ -214,6 +213,7 @@ function makeDeleteRequest(table, where, responseFields) {
   if (responseFields.length > 0) {
     deleteRequest += `RETURNING ${responseFields.toString()}`;
   }
+
   return [deleteRequest, values];
 }
 
@@ -335,16 +335,17 @@ Database.prototype.delete = async function (table, where, responseFields = [], e
   try {
     checkAllArguments.call(
       this,
-      ["payload", "table", "where", "responseFields", "error"],
+      ["table", "where", "responseFields", "error"],
       arguments,
-      [isObject, isString, isObject, isArray, isFunction],
+      [isString, isObject, isArray, isFunction],
       4
     );
     checkResponseFields.call(this, responseFields, error);
-    checkPayload.call(this, payload, error);
     checkTable.call(this, table, error);
+    checkPayload.call(this, where, error);
     checkIfTableExists.call(this, table, error);
     checkTableFields.call(this, where, error);
+
     let request = makeDeleteRequest(table, where, responseFields);
     const result = await this.pool.query(request[0], request[1]);
     return result.rows;

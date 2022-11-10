@@ -7,7 +7,7 @@ const { HttpErrors } = require("../helpers/errors");
 
 async function checkAdminMiddleware(req, res, next) {
   try {
-    const adminExists = await AdminModel.getAdmin({ role: "Administrator" });
+    const adminExists = await AdminModel.getAdmin({ role: "administrator" });
     if (adminExists.length === 0) {
       res.redirect("/admin/auth/subscribe");
       return;
@@ -60,7 +60,6 @@ function checkRole(roles, action) {
   return async function (req, res, next, roles, action) {
     try {
       const user = await getUserBy({ id: req.user.userId });
-
       if (!roles.includes(user.role)) {
         throw { status: "500", message: "test" };
       }

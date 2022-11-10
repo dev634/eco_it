@@ -4,6 +4,9 @@ import { postForm, logout, updateProfile } from "./api.js";
 function makeDatasFromForm(form) {
   const datas = {};
   Array.from(form).map((elmt, i) => {
+    if (elmt.type === "button" && elmt.id === "delete") {
+      return;
+    }
     if (elmt.type !== "submit") {
       datas[elmt.id] = elmt.value;
     }
@@ -19,6 +22,7 @@ window.onload = function (e) {
   const flashMessage = document.getElementById("flash__message");
   const form = document.getElementsByTagName("form")[0];
   const button = document.getElementById("submit");
+  const deleteBtn = document.getElementById("delete");
 
   if (logout) {
     logoutBtn.addEventListener("click", async function (e) {
@@ -36,8 +40,13 @@ window.onload = function (e) {
   if (form) {
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
+      let max = form.length - 1;
 
-      if (!checkAdminSignupForm(this, form.length - 1)) {
+      if (form.id === "profile") {
+        max = form.length - 2;
+      }
+
+      if (!checkAdminSignupForm(this, max)) {
         return;
       }
 
@@ -51,13 +60,16 @@ window.onload = function (e) {
       if (form.id === "profile") {
         result = await updateProfile("PATCH", "/admin/profile", datas);
       }
+
       loader.classList.remove("hidden");
 
       if (result && result.status >= 200 && result.status < 400) {
         setTimeout(() => {
           loader.classList.add("hidden");
           button.removeAttribute("disabled");
-          location = "/admin";
+          if (form.id !== "profile") {
+            location = "/admin";
+          }
         }, 800);
         return;
       }
@@ -71,8 +83,6 @@ window.onload = function (e) {
         }, 800);
         return;
       }
-
-      // location.reload();
     });
 
     form.addEventListener("input", function (e) {
@@ -84,6 +94,35 @@ window.onload = function (e) {
         e.target.classList.remove("border-red-500");
         if (!e.target.nextSibling.nextSibling.classList.contains("invisible")) {
           e.target.nextSibling.nextSibling.classList.add("invisible");
+        }
+      }
+    });
+  }
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener("click", async function (e) {
+      e.preventDefault();
+      if (e.target.id === "delete") {
+        let result = await updateProfile("DELETE", "/admin/profile");
+        if (result && result.status >= 200 && result.status < 400) {
+          setTimeout(() => {
+            loader.classList.add("hidden");
+            deleteBtn.removeAttribute("disabled");
+            if (form.id !== "profile") {
+              location = "/admin";
+            }
+          }, 800);
+          return;
+        }
+
+        if (result && result.status >= 400) {
+          flashMessage.classList.remove("hidden");
+          setTimeout(() => {
+            flashMessage.classList.add("hidden");
+            deleteBtn.removeAttribute("disabled");
+            loader.classList.add("hidden");
+          }, 800);
+          return;
         }
       }
     });
