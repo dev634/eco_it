@@ -18,10 +18,8 @@ export async function postForm(datas, url) {
       body: form,
     });
 
-    if (result.ok) {
-      let response = await result.json();
-      return response;
-    }
+    let response = await result.json();
+    return response;
   } catch (error) {
     return error;
   }
@@ -99,6 +97,7 @@ export async function updateProfile(verb = "GET", url, datas = null, action = nu
     }
 
     let result = await fetch(`${APP_SCHEME}://${APP_URL}:${APP_PORT}${url}`, { ...payload });
+
     let response = await result.json();
     if (action) {
       return action();

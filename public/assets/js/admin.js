@@ -77,9 +77,9 @@ window.onload = function (e) {
       if (result && result.status >= 400) {
         flashMessage.classList.remove("hidden");
         setTimeout(() => {
+          loader.classList.add("hidden");
           flashMessage.classList.add("hidden");
           button.removeAttribute("disabled");
-          loader.classList.add("hidden");
         }, 800);
         return;
       }
@@ -104,13 +104,14 @@ window.onload = function (e) {
       e.preventDefault();
       if (e.target.id === "delete") {
         let result = await updateProfile("DELETE", "/admin/profile");
+        let deleteLoader = document.querySelector("#delete #loader");
+
+        deleteLoader.classList.remove("hidden");
         if (result && result.status >= 200 && result.status < 400) {
           setTimeout(() => {
-            loader.classList.add("hidden");
+            deleteLoader.classList.add("hidden");
             deleteBtn.removeAttribute("disabled");
-            if (form.id !== "profile") {
-              location = "/admin";
-            }
+            location = "/admin";
           }, 800);
           return;
         }
@@ -120,7 +121,7 @@ window.onload = function (e) {
           setTimeout(() => {
             flashMessage.classList.add("hidden");
             deleteBtn.removeAttribute("disabled");
-            loader.classList.add("hidden");
+            deleteLoader.classList.add("hidden");
           }, 800);
           return;
         }

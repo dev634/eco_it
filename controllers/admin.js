@@ -110,7 +110,7 @@ async function postAdmin(req, res) {
       }
       return makeResponse(res, HttpErrors.BadRequest(details.message));
     }
-    return makeResponse(res, HttpErrors.Internal(error));
+    return makeResponse(res, HttpErrors.Internal());
   }
 }
 

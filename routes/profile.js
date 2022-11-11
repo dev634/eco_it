@@ -7,6 +7,7 @@ const upload = multer();
 
 router.get(
   "/profile",
+  Authentication.checkAdminMiddleware,
   Authentication.checkCookieMiddleware,
   Authentication.checkRole(["administrator"], () => res.redirect("/")),
   ProfileController.getUser
