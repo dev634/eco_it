@@ -64,9 +64,15 @@ window.onload = function (e) {
       loader.classList.remove("hidden");
 
       if (result && result.status >= 200 && result.status < 400) {
+        flashMessage.classList.add("bg-green-400");
+        flashMessage.classList.remove("hidden");
+        flashMessage.textContent = result.message;
         setTimeout(() => {
+          flashMessage.classList.add("hidden");
+          flashMessage.classList.remove("bg-green-400");
           loader.classList.add("hidden");
           button.removeAttribute("disabled");
+          flashMessage.textContent = "";
           if (form.id !== "profile") {
             location = "/admin";
           }
@@ -75,12 +81,17 @@ window.onload = function (e) {
       }
 
       if (result && result.status >= 400) {
+        flashMessage.classList.add("bg-red-400");
         flashMessage.classList.remove("hidden");
+        flashMessage.textContent = result.message;
         setTimeout(() => {
+          flashMessage.classList.remove("bg-red-400");
           loader.classList.add("hidden");
           flashMessage.classList.add("hidden");
+          flashMessage.textContent = "";
           button.removeAttribute("disabled");
         }, 800);
+
         return;
       }
     });
@@ -117,9 +128,14 @@ window.onload = function (e) {
         }
 
         if (result && result.status >= 400) {
+          flashMessage.classList.add("bg-red-400");
+          flashMessage.textContent = result.message;
           flashMessage.classList.remove("hidden");
+
           setTimeout(() => {
             flashMessage.classList.add("hidden");
+            flashMessage.textContent = "";
+            flashMessage.classList.remove("bg-red-400");
             deleteBtn.removeAttribute("disabled");
             deleteLoader.classList.add("hidden");
           }, 800);
