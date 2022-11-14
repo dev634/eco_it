@@ -16,8 +16,20 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 router.use("/admin", AuthRoute);
-router.use("/admin", InstructorsRoute);
-router.use("/admin", ProfileRoute);
+router.use(
+  "/admin",
+  Authentication.checkAdminMiddleware,
+  Authentication.checkCookieMiddleware,
+  Authentication.checkRole(["administrator", "instructor"], () => res.redirect("/")),
+  InstructorsRoute
+);
+router.use(
+  "/admin",
+  Authentication.checkAdminMiddleware,
+  Authentication.checkCookieMiddleware,
+  Authentication.checkRole(["administrator", "instructor"], () => res.redirect("/")),
+  ProfileRoute
+);
 
 router.get(
   "/admin",

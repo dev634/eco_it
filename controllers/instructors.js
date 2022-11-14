@@ -1,10 +1,10 @@
 const { render, redirect } = require("../helpers/server");
-const InstructorsModel = require("../models/instructors");
+const UsersModel = require("../models/users");
 
 async function instructors(req, res) {
   try {
-    const instructors = await InstructorsModel.getAll();
-
+    const instructors = await UsersModel.getUser({ role: "instructor" });
+    console.log(instructors);
     render(res, "instructors", {
       pageTitle: "instructeurs",
       layout: "admin",
