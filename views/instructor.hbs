@@ -1,15 +1,15 @@
-<main class="flex flex-col h-full justify-start w-11/12 mx-auto">
+<main class="flex flex-col h-full justify-start w-10/12 mx-auto">
 
-      {{> image classes="rounded-full w-8/12 my-8 mx-auto sm:mb-10-vh" imgLink=instructor.photo imgAlt=alt}}
+      {{> image classes="rounded-full w-8/12 mt-12 mx-auto sm:mb-10-vh" imgLink=instructor.photo imgAlt=alt}}
       <div class="infos w-full mb-14-vh">
-            <p class="w-full text-xl text-center mb-3">Prénom : {{{instructor.firstname}}}</p>
-            <p class="w-full text-xl text-center mb-3">Nom : {{{instructor.lastname}}}</p> 
-            <p class="w-full text-xl text-center mb-3">Email : {{{instructor.email}}}</p>
+            <p class="w-full text-center">Prénom : {{{instructor.firstname}}}</p>
+            <p class="w-full text-center">Nom : {{{instructor.lastname}}}</p> 
+            <p class="w-full text-center">Email : {{{instructor.email}}}</p>
 
             {{#if instructor.isapprouved}}
-            <p class="w-full text-xl text-center">Status : <span class="text-green-400">Approuvé</span></p>
+            <p class="w-full text-center">Status : <span class="text-green-400">Approuvé</span></p>
             {{else}}
-            <p class="w-full text-xl text-center">Status : <span class="text-red-500">Non Approuvé</span></p>
+            <p class="w-full text-center">Status : <span class="text-red-500">Non Approuvé</span></p>
             {{/if}}
       </div>
       <div class="w-full">
@@ -18,6 +18,6 @@
             {{else}}
                   {{> button id="approuved" classes="btn btn__success" text="Approuver"}}
             {{/if}}
-            {{> button id="delete" classes="btn btn__delete" text="Supprimer"}}
+            {{> button id="delete_instructor" classes="btn btn__delete" text="Supprimer"}}
       </div>
 </main>

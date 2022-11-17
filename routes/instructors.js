@@ -6,5 +6,5 @@ const Authentication = require("../middlewares/authentication");
 
 router.get("/instructors", InstructorsController.instructors);
 router.get("/instructors/:id", InstructorsController.instructor);
-
+router.post("/instructors", InstructorsController.search);
 module.exports = router;

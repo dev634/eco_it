@@ -20,14 +20,14 @@ router.use(
   "/admin",
   Authentication.checkAdminMiddleware,
   Authentication.checkCookieMiddleware,
-  Authentication.checkRole(["administrator", "instructor"], () => res.redirect("/")),
+  Authentication.checkRole(["administrator"], () => res.redirect("/")),
   InstructorsRoute
 );
 router.use(
   "/admin",
   Authentication.checkAdminMiddleware,
   Authentication.checkCookieMiddleware,
-  Authentication.checkRole(["administrator", "instructor"], () => res.redirect("/")),
+  Authentication.checkRole(["administrator"], () => res.redirect("/")),
   ProfileRoute
 );
 
@@ -35,7 +35,7 @@ router.get(
   "/admin",
   Authentication.checkAdminMiddleware,
   Authentication.checkCookieMiddleware,
-  Authentication.checkRole(["Administrator"], () => res.redirect("/")),
+  Authentication.checkRole(["administrator"], () => res.redirect("/")),
   AdminController.getAdmin
 );
 

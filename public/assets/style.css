@@ -15,7 +15,7 @@ body {
 }
 
 .btn {
-  @apply transition-all uppercase rounded w-full py-1 mb-3 hover:translate-y-px hover:scale-105 shadow;
+  @apply transition-all py-2 uppercase rounded w-full mb-3 hover:translate-y-px hover:scale-105 shadow;
 }
 
 .btn__success {
