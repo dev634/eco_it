@@ -12,6 +12,7 @@
 body {
   background-color: #efefef;
   height: calc(100vh + var(--shift));
+  overflow-y: hidden;
 }
 
 .btn {

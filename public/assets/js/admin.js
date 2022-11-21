@@ -17,12 +17,18 @@ function makeDatasFromForm(form) {
 
 async function handleSearchBar(e) {
   e.preventDefault();
+
   const list = document.getElementById("instructors__list");
   let response = null;
   let match = /^[a-zA-Z]*$/;
   let match2 = /^[\s].*/;
 
   if (e.target.value.match(match2)) {
+    return;
+  }
+
+  if (e.target.value.length > 10) {
+    e.target.value = e.target.value.slice(0, 10);
     return;
   }
 

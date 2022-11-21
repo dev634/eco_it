@@ -517,10 +517,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-right: 0.5rem;
 }
 
-.mb-4-vh {
-  margin-bottom: 4vh;
-}
-
 .mb-4 {
   margin-bottom: 1rem;
 }
@@ -889,6 +885,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(209 213 219 / var(--tw-text-opacity));
 }
 
+.text-green-600 {
+  --tw-text-opacity: 1;
+  color: rgb(22 163 74 / var(--tw-text-opacity));
+}
+
 .text-gray-200 {
   --tw-text-opacity: 1;
   color: rgb(229 231 235 / var(--tw-text-opacity));
@@ -957,6 +958,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 body {
   background-color: #efefef;
   height: calc(100vh + var(--shift));
+  overflow-y: hidden;
 }
 
 .btn {
