@@ -28,7 +28,8 @@
     "multer": "^1.4.4",
     "nodemailer": "^6.7.3",
     "pg": "^8.7.3",
-    "tailwindcss": "^3.0.24"
+    "tailwindcss": "^3.0.24",
+    "validate-structure": "^2.0.0"
   },
   "devDependencies": {
     "browser-sync": "^2.27.9",

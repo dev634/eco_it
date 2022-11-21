@@ -34,9 +34,4 @@ body {
   .infos {
     margin-bottom: 8vh;
   }
-
-  .admin__page {
-    width: 100vw;
-    height: 100%;
-  }
 }

@@ -97,11 +97,14 @@ export async function updateProfile(verb = "GET", url, datas = null, action = nu
     }
 
     let result = await fetch(`${APP_SCHEME}://${APP_URL}:${APP_PORT}${url}`, { ...payload });
-
+    if (result.redirected) {
+      window.location.replace(result.url);
+    }
     let response = await result.json();
     if (action) {
-      return action();
+      action();
     }
+
     return response;
   } catch (error) {
     return error;

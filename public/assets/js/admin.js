@@ -15,6 +15,34 @@ function makeDatasFromForm(form) {
   return { ...datas };
 }
 
+async function handleSearchBar(e) {
+  e.preventDefault();
+  const list = document.getElementById("instructors__list");
+  let response = null;
+  let match = /^[a-zA-Z]*$/;
+  let match2 = /^[\s].*/;
+
+  if (e.target.value.match(match2)) {
+    return;
+  }
+
+  e.target.parentElement.nextElementSibling.classList.remove("opacity-0");
+
+  if (e.target.value.length === 0 && e.key === "Backspace") {
+    response = await updateProfile("GET", "/admin/instructors/all");
+    e.target.parentElement.nextElementSibling.classList.add("opacity-0");
+    e.target.focus();
+    return;
+  }
+
+  response = await updateProfile("POST", "/admin/instructors", {
+    firstname: e.target.value.trim(),
+    lastname: e.target.value.trim(),
+  });
+
+  e.target.parentElement.nextElementSibling.classList.add("opacity-0");
+}
+
 window.onload = function (e) {
   const backlink = document.getElementById("go-back");
   const logoutBtn = document.getElementById("logout");
@@ -23,11 +51,17 @@ window.onload = function (e) {
   const form = document.getElementsByTagName("form")[0];
   const button = document.getElementById("submit");
   const deleteBtn = document.getElementById("delete");
+  const searchBar = document.getElementById("search");
+  const filter = document.getElementById("filter");
 
   if (logout) {
     logoutBtn.addEventListener("click", async function (e) {
       let result = await logout();
     });
+  }
+
+  if (searchBar) {
+    searchBar.addEventListener("keyup", handleSearchBar);
   }
 
   if (backlink) {

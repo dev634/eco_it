@@ -224,7 +224,7 @@ function makeDeleteRequest(table, where, responseFields) {
   return [deleteRequest, values];
 }
 
-function makeSearchRequest(payload, table, where, responseFields, all) {
+function makeSearchRequest(table, where, responseFields, all) {
   if (!where) {
     throw "where arguments is required";
   }
@@ -235,26 +235,29 @@ function makeSearchRequest(payload, table, where, responseFields, all) {
     searchRequest += "* ";
   }
 
-  searchRequest += `${Object.keys(where).toString()} FROM ${table} WHERE `;
+  searchRequest += `${responseFields.toString()} FROM ${table} WHERE `;
 
   Object.entries(where).map((field, idx) => {
     if (idx + 1 === Object.keys(field).length) {
-      searchRequest += `${field[0]} ${field[1].sensitive ? "LIKE" : "ILIKE"} %${field[1].value}%`;
+      searchRequest += `${field[0]} ${field[1].sensitive ? "LIKE" : "ILIKE"} '%${field[1].value}%'`;
+      return;
     }
 
     if (all) {
-      searchRequest += `${field[0]} ${field[1].sensitive ? "LIKE" : "ILIKE"} %${
+      searchRequest += `${field[0]} ${field[1].sensitive ? "LIKE" : "ILIKE"} '%${
         field[1].value
-      }% AND `;
+      }%' AND `;
+      return;
     }
 
     if (!all) {
-      searchRequest += `${field[0]} ${field[1].sensitive ? "LIKE" : "ILIKE"} %${
+      searchRequest += `${field[0]} ${field[1].sensitive ? "LIKE" : "ILIKE"} '%${
         field[1].value
-      }% OR `;
+      }%' OR `;
+      return;
     }
 
-    return searchRequest;
+    return true;
   });
 
   return searchRequest;
@@ -400,26 +403,26 @@ Database.prototype.delete = async function (table, where, responseFields = [], e
 Database.prototype.find = async function (
   table,
   where,
-  checkWhere,
   responseFields = [],
+  all = false,
   error = null
 ) {
   try {
     checkAllArguments.call(
       this,
-      ["table", "where", "checkWhere", "responseFields", "error"],
+      ["table", "where", "responseFields", "all", "error"],
       arguments,
-      [isString, isObject, isFunction, isArray, isFunction],
+      [isString, isObject, isArray, isBoolean, isFunction],
       5
     );
+
     checkResponseFields.call(this, responseFields, error);
     checkTable.call(this, table, error);
     checkIfTableExists.call(this, table, error);
     checkTableFields.call(this, where, error);
-    checkWhere();
 
-    let request = makeSearchRequest(table, where, responseFields);
-    const result = await this.pool.query(request[0], request[1]);
+    let request = makeSearchRequest(table, where, responseFields, all);
+    const result = await this.pool.query(request);
     return result.rows;
   } catch (error) {
     throw error;
