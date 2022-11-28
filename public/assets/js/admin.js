@@ -70,6 +70,7 @@ async function handleSearchBar(e) {
     firstname: e.target.value.trim(),
     lastname: e.target.value.trim(),
   });
+
   makeListInstructors(list, template, response);
 
   e.target.parentElement.nextElementSibling.classList.add("opacity-0");

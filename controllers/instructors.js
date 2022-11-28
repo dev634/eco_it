@@ -83,8 +83,13 @@ async function search(req, res) {
   } catch (error) {
     Logger(error);
     if (error.isJoi) {
+      if (error.details[0].type === "string.pattern.base") {
+        return res.status(404).json([]);
+      }
+      return res.status(500).json(HttpErrors.Internal());
     }
-    redirect(res, "404");
+
+    return redirect(res, "/404");
   }
 }
 
