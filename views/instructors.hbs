@@ -1,4 +1,21 @@
 <main class="pt-10 h-full flex flex-wrap content-start w-10/12 mx-auto">
       {{> search-bar idInput="search" idFilter="filter"}}
-      {{> instructors classes="w-full  max-h-70-vh overflow-auto"}}
+      {{> instructors classes="w-full  max-h-70-vh overflow-x-hidden p-4"}}
+      <template id="instructor">
+            <li class="flex justify-between w-full p-2 bg-gray-300 transform transition duration-200 hover:scale-110 w-full mb-4 rounded shadow-xl">
+                  <img class="image rounded-full h-16" src="" alt="user">  
+                  <div class="flex flex-col py-2 justify-around text-sm">
+                        <p class="firstname" class="text-center"></p>
+                        <p class="lastname" class="text-center"></p>
+                  </div>  
+                  <div class="flex flex-col justify-around items-end py-1">
+                        <p class="approuved" class="text-green-600 text-xs"></p>
+                        <a class="instructor-link" href="">
+                          <svg class="icon cursor-pointer h-4" xmlns="http://www.w3.org/2000/svg" width="23.178" height="23.51" viewBox="0 0 23.178 23.51">
+                            <path data-name="Icon feather-edit-2" d="M18.842,4.156a2.932,2.932,0,0,1,4.224,0,3.127,3.127,0,0,1,0,4.339L8.809,23.14,3,24.767,4.584,18.8Z" transform="translate(-2 -2.257)" fill="none" stroke="#6e6a6a" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                          </svg>
+                        </a>
+                </div>
+            </li>
+      </template>
 </main>

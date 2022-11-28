@@ -15,13 +15,35 @@ function makeDatasFromForm(form) {
   return { ...datas };
 }
 
+function makeListInstructors(listElement, template, datas) {
+  return datas.map((elmt) => {
+    let clone = template.content.cloneNode(true);
+    const img = clone.querySelector(".image");
+    const firstname = clone.querySelector(".firstname");
+    const lastname = clone.querySelector(".lastname");
+    const approuved = clone.querySelector(".approuved");
+    const instructorLink = clone.querySelector(".instructor-link");
+
+    img.src = elmt.photo;
+    firstname.textContent = elmt.firstname;
+    lastname.textContent = elmt.lastname;
+    approuved.textContent = `${elmt.isapprouved ? "Approuvé" : "Non approuvé"}`;
+    approuved.classList = `${elmt.isapprouved ? "text-green-500 text-xs" : "text-red-500 text-xs"}`;
+    instructorLink.href = `/admin/instructors/${elmt.id}`;
+
+    listElement.appendChild(clone);
+  });
+}
+
 async function handleSearchBar(e) {
   e.preventDefault();
 
   const list = document.getElementById("instructors__list");
+  const template = document.getElementById("instructor");
   let response = null;
-  let match = /^[a-zA-Z]*$/;
-  let match2 = /^[\s].*/;
+  const match = /^[a-zA-Z]*$/;
+  const match2 = /^[\s].*/;
+  const firstnameMatch = /^[a-zA-Z]{1,10}[\s-]?[a-zA-Z]{1,10}$/;
 
   if (e.target.value.match(match2)) {
     return;
@@ -33,11 +55,14 @@ async function handleSearchBar(e) {
   }
 
   e.target.parentElement.nextElementSibling.classList.remove("opacity-0");
+  list.innerHTML = "";
 
   if (e.target.value.length === 0 && e.key === "Backspace") {
     response = await updateProfile("GET", "/admin/instructors/all");
+    console.log(response);
     e.target.parentElement.nextElementSibling.classList.add("opacity-0");
-    e.target.focus();
+    makeListInstructors(list, template, response);
+    e.target.blur();
     return;
   }
 
@@ -45,6 +70,7 @@ async function handleSearchBar(e) {
     firstname: e.target.value.trim(),
     lastname: e.target.value.trim(),
   });
+  makeListInstructors(list, template, response);
 
   e.target.parentElement.nextElementSibling.classList.add("opacity-0");
 }
@@ -59,6 +85,11 @@ window.onload = function (e) {
   const deleteBtn = document.getElementById("delete");
   const searchBar = document.getElementById("search");
   const filter = document.getElementById("filter");
+  const pen = document.getElementById("icon-pen");
+
+  if (searchBar) {
+    searchBar.value = "";
+  }
 
   if (logout) {
     logoutBtn.addEventListener("click", async function (e) {

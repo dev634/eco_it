@@ -83,7 +83,6 @@ async function search(req, res) {
   } catch (error) {
     Logger(error);
     if (error.isJoi) {
-      console.log(error.details[0]);
     }
     redirect(res, "404");
   }
