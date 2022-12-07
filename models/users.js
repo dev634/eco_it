@@ -14,17 +14,19 @@ async function getUser(payload, responseFields) {
   }
 }
 
-async function getUsers(payload, responseFields) {
+async function getUsers(payload, responseFields, all, sensitive, settings) {
   if (payload.role) {
     delete payload.role;
   }
   let newPayload = { ...payload };
   try {
     Object.keys(payload).map((field) => {
-      newPayload[field] = { sensitive: true, value: payload[field] };
+      newPayload[field] = { sensitive, value: payload[field] };
     });
 
-    let result = await Database.find("users", newPayload, responseFields, false, null);
+    let result = await Database.find("users", newPayload, responseFields, all, null, {
+      ...settings,
+    });
     return result;
   } catch (error) {
     Logger(error);

@@ -11,4 +11,9 @@ module.exports.search = Joi.object({
     .min(1)
     .max(10)
     .pattern(/^[a-zA-Z]+$/),
+  orderby: Joi.string()
+    .pattern(/^(firstname)|(lastname)$/)
+    .allow(""),
+  limit: Joi.string().allow(""),
+  page: Joi.string().allow(""),
 });

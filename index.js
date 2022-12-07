@@ -27,11 +27,12 @@ app.engine(
 );
 app.set("view engine", ".hbs");
 app.set("views", "./views");
+app.set("query parser", "simple");
 
 app.use(cors());
 app.use(cookieParser());
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(rootRouter);
 
 app.listen(PORT, function () {

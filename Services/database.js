@@ -8,6 +8,7 @@ function Database() {
   let tablesList = null;
   let fields = [];
   let logger = null;
+  let request = null;
   return pool;
 }
 
@@ -42,6 +43,13 @@ function isString(argName, arg) {
 function isBoolean(argName, arg) {
   if (typeof arg !== "boolean") {
     throw new Error(`${argName} sould be a boolean`);
+  }
+  return true;
+}
+
+function isInteger(argName, arg) {
+  if (typeof arg !== "number") {
+    throw new Error(`${argName} should be an integer`);
   }
   return true;
 }
@@ -111,7 +119,7 @@ function checkTableFields(payload, error) {
 }
 
 // make select request
-function makeSelectRequest(payload, table, responseFields) {
+function makeSelectRequest(payload, table, responseFields, settings) {
   let userRequest = "SELECT ";
   if (responseFields.length === 0) {
     userRequest += "* ";
@@ -130,6 +138,21 @@ function makeSelectRequest(payload, table, responseFields) {
     }
     userRequest += `${elmt} = $${idx + 1} AND `;
   });
+
+  if (!!settings) {
+    if (settings.orderby) {
+      userRequest += `ORDER BY ${settings.orderby} `;
+    }
+
+    if (settings.limit) {
+      userRequest += `LIMIT ${settings.limit} `;
+    }
+
+    if (settings.page) {
+      userRequest += `OFFSET ${settings.offset} `;
+    }
+  }
+
   return userRequest;
 }
 
@@ -224,7 +247,7 @@ function makeDeleteRequest(table, where, responseFields) {
   return [deleteRequest, values];
 }
 
-function makeSearchRequest(table, where, responseFields, all) {
+function makeSearchRequest(table, where, responseFields, all, settings) {
   if (!where) {
     throw "where arguments is required";
   }
@@ -239,7 +262,9 @@ function makeSearchRequest(table, where, responseFields, all) {
 
   Object.entries(where).map((field, idx) => {
     if (idx + 1 === Object.keys(field).length) {
-      searchRequest += `${field[0]} ${field[1].sensitive ? "LIKE" : "ILIKE"} '%${field[1].value}%'`;
+      searchRequest += `${field[0]} ${field[1].sensitive ? "LIKE" : "ILIKE"} '%${
+        field[1].value
+      }%' `;
       return;
     }
 
@@ -259,6 +284,20 @@ function makeSearchRequest(table, where, responseFields, all) {
 
     return true;
   });
+
+  if (settings) {
+    if (settings.orderby) {
+      searchRequest += `ORDER BY ${settings.orderby} `;
+    }
+
+    if (settings.limit) {
+      searchRequest += `LIMIT ${settings.limit} `;
+    }
+
+    if (settings.page) {
+      searchRequest += `OFFSET ${settings.page} `;
+    }
+  }
 
   return searchRequest;
 }
@@ -281,6 +320,14 @@ function checkAllArguments(argsNames, args, tests = [], length) {
   });
 }
 
+function checkSettings(settings) {
+  if (Object.keys(settings).includesAll(["orderby", "limit", "page"])) {
+    return true;
+  }
+
+  throw "Settings should contain orderBy and limit and offset";
+}
+
 function checkGetByArguments(argsNames, args, length) {
   return true;
 }
@@ -301,14 +348,46 @@ Database.prototype.init = async function (credentials, table, logger, makeDbErro
   this.fields = fieldsResult.fields.map((elmt) => elmt.name);
 };
 
-Database.prototype.getBy = async function (payload, table, responseFields = [], error = null) {
+Database.prototype.getById = async function (id, table, responseFields, error) {
   try {
+    /* 
+      select attname AS table_id from pg_attribute where attnum > 0 and attrelid = 
+      (select oid from pg_class where relname = 'users') and attidentity = 'a';
+    */
     checkAllArguments.call(
       this,
-      ["payload", "table", "responseFields", "error"],
+      ["id", "table", "responseFields", "error"],
       arguments,
       [isObject, isString, isArray, isFunction],
       4
+    );
+    checkTable.call(this, table, error);
+    checkResponseFields.call(this, responseFields, error);
+    const request = `SELECT ${responseFields.toString()} FROM ${table} WHERE ${
+      Object.keys(id)[0]
+    } = $1`;
+    const id = Object.values(id)[0];
+    const result = await this.pool.query(request, id);
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+Database.prototype.getBy = async function (
+  payload,
+  table,
+  responseFields = [],
+  error = null,
+  settings = undefined
+) {
+  try {
+    checkAllArguments.call(
+      this,
+      ["payload", "table", "responseFields", "error", "settings"],
+      arguments,
+      [isObject, isString, isArray, isFunction, isObject],
+      5
     );
 
     checkResponseFields.call(this, responseFields, error);
@@ -317,7 +396,11 @@ Database.prototype.getBy = async function (payload, table, responseFields = [], 
     checkIfTableExists.call(this, table, error);
     checkTableFields.call(this, payload, error);
 
-    const selectRequest = makeSelectRequest.call(this, payload, table, responseFields);
+    if (!!settings) {
+      checkSettings.call(this, settings, error);
+    }
+
+    const selectRequest = makeSelectRequest(payload, table, responseFields, settings);
     const values = makeValuesList.call(this, payload);
     const result = await this.pool.query(selectRequest, values);
     return result.rows;
@@ -340,7 +423,7 @@ Database.prototype.create = async function (payload, table, responseFields = [],
     checkTable.call(this, table, error);
     checkIfTableExists.call(this, table, error);
     checkTableFields.call(this, payload, error);
-    let request = makeInsertRequest.call(this, payload, table, responseFields);
+    let request = makeInsertRequest(payload, table, responseFields);
     const result = await this.pool.query(request[0], request[1]);
     return result.rows;
   } catch (error) {
@@ -405,24 +488,26 @@ Database.prototype.find = async function (
   where,
   responseFields = [],
   all = false,
-  error = null
+  error = null,
+  settings = {}
 ) {
   try {
     checkAllArguments.call(
       this,
-      ["table", "where", "responseFields", "all", "error"],
+      ["table", "where", "responseFields", "all", "error", "settings"],
       arguments,
-      [isString, isObject, isArray, isBoolean, isFunction],
-      5
+      [isString, isObject, isArray, isBoolean, isFunction, isObject],
+      6
     );
-
     checkResponseFields.call(this, responseFields, error);
     checkTable.call(this, table, error);
     checkIfTableExists.call(this, table, error);
     checkTableFields.call(this, where, error);
+    checkSettings.call(this, settings, error);
 
-    let request = makeSearchRequest(table, where, responseFields, all);
+    let request = makeSearchRequest(table, where, responseFields, all, settings);
     const result = await this.pool.query(request);
+
     return result.rows;
   } catch (error) {
     throw error;

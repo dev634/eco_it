@@ -89,6 +89,7 @@ export async function logout() {
 export async function updateProfile(verb = "GET", url, datas = null, action = null) {
   let form = null;
   let payload = {};
+
   try {
     payload.method = verb;
     if (datas) {
@@ -100,11 +101,13 @@ export async function updateProfile(verb = "GET", url, datas = null, action = nu
     if (result.redirected) {
       window.location.replace(result.url);
     }
-    let response = await result.json();
-    if (action) {
+
+    if (result.status >= 400 && result.status < 600) {
       action();
+      return;
     }
 
+    let response = await result.json();
     return response;
   } catch (error) {
     return error;

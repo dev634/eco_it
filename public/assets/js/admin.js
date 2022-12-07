@@ -30,7 +30,6 @@ function makeListInstructors(listElement, template, datas) {
     approuved.textContent = `${elmt.isapprouved ? "Approuvé" : "Non approuvé"}`;
     approuved.classList = `${elmt.isapprouved ? "text-green-500 text-xs" : "text-red-500 text-xs"}`;
     instructorLink.href = `/admin/instructors/${elmt.id}`;
-
     listElement.appendChild(clone);
   });
 }
@@ -59,21 +58,37 @@ async function handleSearchBar(e) {
 
   if (e.target.value.length === 0 && e.key === "Backspace") {
     response = await updateProfile("GET", "/admin/instructors/all");
-    console.log(response);
     e.target.parentElement.nextElementSibling.classList.add("opacity-0");
     makeListInstructors(list, template, response);
     e.target.blur();
     return;
   }
+  const url = new URL(window.location.href);
+  const search = new URLSearchParams(url.search);
+  const iterator = search.entries();
+  const query = { orderby: "", limit: "", page: "" };
 
-  response = await updateProfile("POST", "/admin/instructors", {
-    firstname: e.target.value.trim(),
-    lastname: e.target.value.trim(),
-  });
+  for (let a of iterator) {
+    let property = a[0];
+    query[property] = a[1];
+  }
 
-  makeListInstructors(list, template, response);
+  response = await updateProfile(
+    "POST",
+    "/admin/instructors",
+    {
+      firstname: e.target.value.trim(),
+      lastname: e.target.value.trim(),
+      ...query,
+    },
+    () => (window.location.href = "http://localhost:3000/404")
+  );
 
-  e.target.parentElement.nextElementSibling.classList.add("opacity-0");
+  if (response) {
+    makeListInstructors(list, template, response);
+    e.target.parentElement.nextElementSibling.classList.add("opacity-0");
+  }
+  return;
 }
 
 window.onload = function (e) {

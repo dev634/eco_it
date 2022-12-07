@@ -601,6 +601,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 66.666667%;
 }
 
+.w-16 {
+  width: 4rem;
+}
+
 .w-1\/5 {
   width: 20%;
 }
@@ -698,6 +702,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .justify-around {
   justify-content: space-around;
+}
+
+.overflow-hidden {
+  overflow: hidden;
 }
 
 .overflow-x-hidden {
