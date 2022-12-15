@@ -1,6 +1,12 @@
-<main class="pt-10 h-full flex flex-wrap content-start w-10/12 mx-auto">
+<main class="pt-10 pb-10 h-screen flex flex-wrap content-center w-10/12 mx-auto">
+      {{#if instructors}}
       {{> search-bar idInput="search" idFilter="filter"}}
-      {{> instructors classes="w-full  max-h-70-vh overflow-x-hidden p-4"}}
+      {{/if}}
+      <div class="h-2-vh w-full"></div>
+      {{> instructors classes="w-full h-60-vh overflow-x-hidden p-4"}}
+      <div class="h-4-vh w-full"></div>
+      {{#if instructors}}
+      {{> pagination pages = pages}}
       <template id="instructor">
             <li class="flex justify-between w-full p-2 bg-gray-300 transform transition duration-200 hover:scale-110 w-full mb-4 rounded shadow-xl">
                   <img class="image rounded-full h-16" src="" alt="user">  
@@ -18,4 +24,5 @@
                 </div>
             </li>
       </template>
+      {{/if}}
 </main>

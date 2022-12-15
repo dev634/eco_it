@@ -23,7 +23,8 @@ async function getAdmin(payload) {
       payload,
       "users",
       ["id", "pseudo", "email", "password"],
-      null
+      null,
+      { orderby: "firstname" }
     );
     return result;
   } catch (error) {

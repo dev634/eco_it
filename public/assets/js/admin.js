@@ -1,5 +1,6 @@
 import { checkAdminSignupForm, checkAdminSigninForm, checkAdminForgetForm } from "./forms.js";
 import { postForm, logout, updateProfile } from "./api.js";
+import { APP_SCHEME, APP_URL, APP_PORT } from "./constantes.js";
 
 function makeDatasFromForm(form) {
   const datas = {};
@@ -57,10 +58,11 @@ async function handleSearchBar(e) {
   list.innerHTML = "";
 
   if (e.target.value.length === 0 && e.key === "Backspace") {
-    response = await updateProfile("GET", "/admin/instructors/all");
-    e.target.parentElement.nextElementSibling.classList.add("opacity-0");
-    makeListInstructors(list, template, response);
-    e.target.blur();
+    // response = await updateProfile("GET", "/admin/instructors/all");
+    // e.target.parentElement.nextElementSibling.classList.add("opacity-0");
+    // makeListInstructors(list, template, response);
+    // e.target.blur();
+    location.replace(`${APP_SCHEME}://${APP_URL}:${APP_PORT}/admin/instructors`);
     return;
   }
   const url = new URL(window.location.href);
@@ -102,6 +104,11 @@ window.onload = function (e) {
   const searchBar = document.getElementById("search");
   const filter = document.getElementById("filter");
   const pen = document.getElementById("icon-pen");
+  const manage_instructors_link = document.getElementById("manage_instructors");
+
+  if (manage_instructors_link && window.innerHeight <= 600) {
+    manage_instructors_link.href = "/admin/instructors?limit=30";
+  }
 
   if (searchBar) {
     searchBar.value = "";

@@ -4,9 +4,9 @@ const dbCredentials = require("../constantes/dbCredentials");
 const Database = require("../Services/database");
 Database.init(dbCredentials, "users", Logger, null, "public");
 
-async function getUser(payload, responseFields) {
+async function getUser(payload, responseFields, settings) {
   try {
-    let result = await Database.getBy(payload, "users", responseFields, null);
+    let result = await Database.getBy(payload, "users", responseFields, null, settings);
     return result;
   } catch (error) {
     Logger(error);

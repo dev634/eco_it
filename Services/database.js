@@ -118,6 +118,20 @@ function checkTableFields(payload, error) {
   }
 }
 
+// make count request
+function makeCountRequest(payload, table) {
+  let userRequest = `SELECT COUNT(*) AS count FROM ${table} WHERE `;
+  Object.keys(payload).map((elmt, idx) => {
+    if (idx === Object.keys(payload).length - 1) {
+      userRequest += `${elmt} = $${idx + 1} `;
+      return;
+    }
+    userRequest += `${elmt} = $${idx + 1} AND `;
+  });
+
+  return userRequest;
+}
+
 // make select request
 function makeSelectRequest(payload, table, responseFields, settings) {
   let userRequest = "SELECT ";
@@ -133,7 +147,7 @@ function makeSelectRequest(payload, table, responseFields, settings) {
 
   Object.keys(payload).map((elmt, idx) => {
     if (idx === Object.keys(payload).length - 1) {
-      userRequest += `${elmt} = $${idx + 1}`;
+      userRequest += `${elmt} = $${idx + 1} `;
       return;
     }
     userRequest += `${elmt} = $${idx + 1} AND `;
@@ -149,7 +163,7 @@ function makeSelectRequest(payload, table, responseFields, settings) {
     }
 
     if (settings.page) {
-      userRequest += `OFFSET ${settings.offset} `;
+      userRequest += `OFFSET ${settings.page} `;
     }
   }
 
@@ -348,27 +362,50 @@ Database.prototype.init = async function (credentials, table, logger, makeDbErro
   this.fields = fieldsResult.fields.map((elmt) => elmt.name);
 };
 
-Database.prototype.getById = async function (id, table, responseFields, error) {
+// Database.prototype.getById = async function (id, table, responseFields, error, settings) {
+//   try {
+//     const requestColumnIdName = `SELECT attname AS table_id from pg_attribute WHERE attnum > 0
+//     AND attrelid = (SELECT oid FROM pg_class WHERE relname = ${table}) AND attidentity = 'a'`;
+//     const resultIdName = await this.pool.query(requestColumnIdName);
+//     console.log(resultIdName);
+//     checkAllArguments.call(
+//       this,
+//       ["id", "table", "responseFields", "error", "settings"],
+//       arguments,
+//       [isObject, isString, isArray, isFunction, isObject],
+//       5
+//     );
+//     checkTable.call(this, table, error);
+//     checkResponseFields.call(this, responseFields, error);
+//     const request = `SELECT ${responseFields.toString()} FROM ${table} WHERE ${
+//       Object.keys(id)[0]
+//     } = $1`;
+//     const id = Object.values(id)[0];
+//     const result = await this.pool.query(request, id);
+//     return result.rows;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+Database.prototype.getTotalRows = async function (payload, table, error = null) {
   try {
-    /* 
-      select attname AS table_id from pg_attribute where attnum > 0 and attrelid = 
-      (select oid from pg_class where relname = 'users') and attidentity = 'a';
-    */
     checkAllArguments.call(
       this,
-      ["id", "table", "responseFields", "error"],
+      ["payload", "table", "error"],
       arguments,
-      [isObject, isString, isArray, isFunction],
-      4
+      [isObject, isString, isFunction],
+      3
     );
+    checkPayload.call(this, payload, error);
     checkTable.call(this, table, error);
-    checkResponseFields.call(this, responseFields, error);
-    const request = `SELECT ${responseFields.toString()} FROM ${table} WHERE ${
-      Object.keys(id)[0]
-    } = $1`;
-    const id = Object.values(id)[0];
-    const result = await this.pool.query(request, id);
-    return result.rows;
+    checkIfTableExists.call(this, table, error);
+    checkTableFields.call(this, payload, error);
+    const countRequest = makeCountRequest(payload, table);
+    const valuesList = makeValuesList.call(this, payload);
+    const result = await this.pool.query(countRequest, valuesList);
+
+    return result.rows[0].count;
   } catch (error) {
     throw error;
   }
@@ -395,10 +432,6 @@ Database.prototype.getBy = async function (
     checkTable.call(this, table, error);
     checkIfTableExists.call(this, table, error);
     checkTableFields.call(this, payload, error);
-
-    if (!!settings) {
-      checkSettings.call(this, settings, error);
-    }
 
     const selectRequest = makeSelectRequest(payload, table, responseFields, settings);
     const values = makeValuesList.call(this, payload);
@@ -499,6 +532,7 @@ Database.prototype.find = async function (
       [isString, isObject, isArray, isBoolean, isFunction, isObject],
       6
     );
+
     checkResponseFields.call(this, responseFields, error);
     checkTable.call(this, table, error);
     checkIfTableExists.call(this, table, error);
