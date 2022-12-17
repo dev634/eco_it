@@ -7,12 +7,18 @@
   --green: #0ea47a;
   --green-clear: #3eb896;
   --shift: 48px;
+  --animation-time: 400ms;
+  --animation-time-fade-in: 800ms;
+  --xs-animation-delay: 100ms;
+  --sm-animation-delay: 200ms;
+  --md-animation-delay: 400ms;
+  --lg-animation-delay: 800ms;
 }
 
 body {
   background-color: #efefef;
   height: calc(100vh + var(--shift));
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 .btn {

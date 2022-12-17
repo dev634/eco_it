@@ -1,7 +1,8 @@
-<div class="flex justify-between items-center w-full px-4">
+<div class="flex justify-between items-center w-full px-4 opacity-0 transform translate-y-[-20px] animate-fromTop">
 {{> inputText classes="focus:border-none text-center placeholder:text-gray-400 rounded-3xl border-2 border-gray-400 px-2 py-1 w-9/12 mr-2 leading-3" placeholder='Rechercher'}}
 {{> lens classes="cursor-pointer h-5"}}
 {{> filter-outlined classes="cursor-pointer h-5"}}
 </div>
 <p class="w-full text-center opacity-0">loading ...</p>
+{{> dropdown options=dropdown}}
 

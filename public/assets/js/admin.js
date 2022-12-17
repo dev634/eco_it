@@ -35,6 +35,10 @@ function makeListInstructors(listElement, template, datas) {
   });
 }
 
+function makePagination(list) {
+  return;
+}
+
 async function handleSearchBar(e) {
   e.preventDefault();
 
@@ -58,10 +62,6 @@ async function handleSearchBar(e) {
   list.innerHTML = "";
 
   if (e.target.value.length === 0 && e.key === "Backspace") {
-    // response = await updateProfile("GET", "/admin/instructors/all");
-    // e.target.parentElement.nextElementSibling.classList.add("opacity-0");
-    // makeListInstructors(list, template, response);
-    // e.target.blur();
     location.replace(`${APP_SCHEME}://${APP_URL}:${APP_PORT}/admin/instructors`);
     return;
   }
@@ -93,7 +93,7 @@ async function handleSearchBar(e) {
   return;
 }
 
-window.onload = function (e) {
+window.addEventListener("load", function (e) {
   const backlink = document.getElementById("go-back");
   const logoutBtn = document.getElementById("logout");
   const loader = document.getElementById("loader");
@@ -105,10 +105,6 @@ window.onload = function (e) {
   const filter = document.getElementById("filter");
   const pen = document.getElementById("icon-pen");
   const manage_instructors_link = document.getElementById("manage_instructors");
-
-  if (manage_instructors_link && window.innerHeight <= 600) {
-    manage_instructors_link.href = "/admin/instructors?limit=30";
-  }
 
   if (searchBar) {
     searchBar.value = "";
@@ -238,4 +234,4 @@ window.onload = function (e) {
       }
     });
   }
-};
+});

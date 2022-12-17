@@ -468,12 +468,20 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-backdrop-sepia:  ;
 }
 
+.pointer-events-none {
+  pointer-events: none;
+}
+
 .invisible {
   visibility: hidden;
 }
 
 .fixed {
   position: fixed;
+}
+
+.absolute {
+  position: absolute;
 }
 
 .bottom-0 {
@@ -490,6 +498,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .right-0 {
   right: 0px;
+}
+
+.top-11 {
+  top: 2.75rem;
+}
+
+.z-10 {
+  z-index: 10;
 }
 
 .mx-auto {
@@ -585,6 +601,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 1.25rem;
 }
 
+.h-8 {
+  height: 2rem;
+}
+
 .h-7 {
   height: 1.75rem;
 }
@@ -625,6 +645,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 18rem;
 }
 
+.w-8 {
+  width: 2rem;
+}
+
 .w-4 {
   width: 1rem;
 }
@@ -637,12 +661,70 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 1.5rem;
 }
 
+.w-\[32px\] {
+  width: 32px;
+}
+
 .max-w-lg {
   max-width: 32rem;
 }
 
+.translate-y-\[20px\] {
+  --tw-translate-y: 20px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.translate-y-\[-20px\] {
+  --tw-translate-y: -20px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.translate-x-\[20px\] {
+  --tw-translate-x: 20px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+@-webkit-keyframes fromTop {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0.2;
+  }
+
+  80% {
+    transform: translateY(3px);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes fromTop {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0.2;
+  }
+
+  80% {
+    transform: translateY(3px);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.animate-fromTop {
+  -webkit-animation: fromTop var(--animation-time) ease-in-out var(--md-animation-delay) forwards 1;
+          animation: fromTop var(--animation-time) ease-in-out var(--md-animation-delay) forwards 1;
 }
 
 @-webkit-keyframes spin {
@@ -660,6 +742,123 @@ Ensure the default browser behavior of the `hidden` attribute.
 .animate-spin {
   -webkit-animation: spin 1s linear infinite;
           animation: spin 1s linear infinite;
+}
+
+@-webkit-keyframes stagger {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  60% {
+    transform: translateY(-10px);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes stagger {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  60% {
+    transform: translateY(-10px);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.animate-stagger {
+  -webkit-animation: stagger var(--animation-time) ease-in-out forwards 1;
+          animation: stagger var(--animation-time) ease-in-out forwards 1;
+}
+
+@-webkit-keyframes fromBottom {
+  0% {
+    transform: translateY(20px);
+    opacity: 0.2;
+  }
+
+  80% {
+    transform: translateY(-3px);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes fromBottom {
+  0% {
+    transform: translateY(20px);
+    opacity: 0.2;
+  }
+
+  80% {
+    transform: translateY(-3px);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.animate-fromBottom {
+  -webkit-animation: fromBottom var(--animation-time) ease-in-out var(--md-animation-delay) forwards 1;
+          animation: fromBottom var(--animation-time) ease-in-out var(--md-animation-delay) forwards 1;
+}
+
+@-webkit-keyframes fromRight {
+  0% {
+    transform: translateX(20px);
+    opacity: 0.2;
+  }
+
+  80% {
+    transform: translateX(-3px);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes fromRight {
+  0% {
+    transform: translateX(20px);
+    opacity: 0.2;
+  }
+
+  80% {
+    transform: translateX(-3px);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+}
+
+.animate-fromRight {
+  -webkit-animation: fromRight var(--sm-animation-delay) ease-in-out var(--sm-animation-delay) forwards 1;
+          animation: fromRight var(--sm-animation-delay) ease-in-out var(--sm-animation-delay) forwards 1;
 }
 
 .cursor-pointer {
@@ -714,6 +913,38 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .justify-around {
   justify-content: space-around;
+}
+
+.divide-y > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-y-reverse: 0;
+  border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+  border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
+}
+
+.divide-y-\[1px\] > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-y-reverse: 0;
+  border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+  border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
+}
+
+.divide-gray-400 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(156 163 175 / var(--tw-divide-opacity));
+}
+
+.divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(229 231 235 / var(--tw-divide-opacity));
+}
+
+.divide-gray-700 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(55 65 81 / var(--tw-divide-opacity));
+}
+
+.divide-gray-500 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(107 114 128 / var(--tw-divide-opacity));
 }
 
 .overflow-hidden {
@@ -796,9 +1027,32 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
+.bg-gray-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+
 .bg-green-400 {
   --tw-bg-opacity: 1;
   background-color: rgb(74 222 128 / var(--tw-bg-opacity));
+}
+
+.bg-green-700 {
+  background-color: var(--green-dark);
+}
+
+.bg-green-300 {
+  background-color: var(--green-clear);
+}
+
+.bg-gray-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
+.bg-gray-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(31 41 55 / var(--tw-bg-opacity));
 }
 
 .p-4 {
@@ -807,6 +1061,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .p-2 {
   padding: 0.5rem;
+}
+
+.p-3 {
+  padding: 0.75rem;
 }
 
 .py-2 {
@@ -837,6 +1095,16 @@ Ensure the default browser behavior of the `hidden` attribute.
 .px-8 {
   padding-left: 2rem;
   padding-right: 2rem;
+}
+
+.py-\[4px\] {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 .pt-10 {
@@ -934,6 +1202,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(100 116 139 / var(--tw-text-opacity));
 }
 
+.text-gray-100 {
+  --tw-text-opacity: 1;
+  color: rgb(243 244 246 / var(--tw-text-opacity));
+}
+
+.text-neutral-300 {
+  --tw-text-opacity: 1;
+  color: rgb(212 212 212 / var(--tw-text-opacity));
+}
+
 .text-green-500 {
   color: var(--green);
 }
@@ -986,12 +1264,18 @@ Ensure the default browser behavior of the `hidden` attribute.
   --green: #0ea47a;
   --green-clear: #3eb896;
   --shift: 48px;
+  --animation-time: 400ms;
+  --animation-time-fade-in: 800ms;
+  --xs-animation-delay: 100ms;
+  --sm-animation-delay: 200ms;
+  --md-animation-delay: 400ms;
+  --lg-animation-delay: 800ms;
 }
 
 body {
   background-color: #efefef;
   height: calc(100vh + var(--shift));
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 .btn {
@@ -1073,6 +1357,28 @@ body {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+@keyframes fromRight {
+  0% {
+    transform: translateX(20px);
+    opacity: 0.2;
+  }
+
+  80% {
+    transform: translateX(-3px);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+}
+
+.hover\:animate-fromRight:hover {
+  -webkit-animation: fromRight var(--sm-animation-delay) ease-in-out var(--sm-animation-delay) forwards 1;
+          animation: fromRight var(--sm-animation-delay) ease-in-out var(--sm-animation-delay) forwards 1;
+}
+
 .hover\:bg-green-700:hover {
   background-color: var(--green-dark);
 }
@@ -1080,6 +1386,11 @@ body {
 .hover\:bg-red-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(185 28 28 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-gray-800:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(31 41 55 / var(--tw-bg-opacity));
 }
 
 .hover\:text-blue-800:hover {

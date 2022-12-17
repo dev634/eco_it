@@ -1,8 +1,8 @@
 
   {{#if instructors}}
-  <ul id="instructors__list" class="instructors {{classes}}">
+  <ul id="instructors__list" class="instructors {{classes}}" style={"--delay": "1"}>
     {{#each instructors}}
-      {{> instructor classes="w-full mb-4 rounded shadow-xl" imgClasses="rounded-full h-16"}}
+      {{> instructor classes="w-full mb-4 rounded shadow-xl animate-stagger" imgClasses="rounded-full h-16"}}
     {{/each}}
   </ul>
     {{else}}

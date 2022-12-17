@@ -16,6 +16,52 @@ module.exports = {
         "green-500": "var(--green)",
         "green-700": "var(--green-dark)",
       },
+      animation: {
+        stagger: "stagger var(--animation-time) ease-in-out forwards 1",
+        fadein:
+          "fadein var(--animation-time-fade-in) ease-in-out var(--xs-animation-delay) forwards 1",
+        fromRight:
+          "fromRight var(--sm-animation-delay) ease-in-out var(--sm-animation-delay) forwards 1",
+        fromLeft: "fromLeft var(--animation-time) ease-in-out var(--sm-animation-delay) forwards 1",
+        fromBottom:
+          "fromBottom var(--animation-time) ease-in-out var(--md-animation-delay) forwards 1",
+        fromTop: "fromTop var(--animation-time) ease-in-out var(--md-animation-delay) forwards 1",
+      },
+      keyframes: {
+        stagger: {
+          "0%": { transform: "translateY(20px)", opacity: 0 },
+          "60%": { transform: "translateY(-10px)", opacity: 0.8 },
+          "100%": { transform: "translateY(0px)", opacity: 1 },
+        },
+        fadein: {
+          "0%": {
+            opacity: 0,
+          },
+          "100%": {
+            opacity: 1,
+          },
+        },
+        fromRight: {
+          "0%": { transform: "translateX(20px)", opacity: 0.2 },
+          "80%": { transform: "translateX(-3px)", opacity: 0.9 },
+          "100%": { transform: "translateX(0px)", opacity: 1 },
+        },
+        fromLeft: {
+          "0%": { transform: "translateX(-20px)", opacity: 0.2 },
+          "80%": { transform: "translateX(3px)", opacity: 0.9 },
+          "100%": { transform: "translateX(0px)", opacity: 1 },
+        },
+        fromBottom: {
+          "0%": { transform: "translateY(20px)", opacity: 0.2 },
+          "80%": { transform: "translateY(-3px)", opacity: 0.9 },
+          "100%": { transform: "translateY(0px)", opacity: 1 },
+        },
+        fromTop: {
+          "0%": { transform: "translateY(-20px)", opacity: 0.2 },
+          "80%": { transform: "translateY(3px)", opacity: 0.9 },
+          "100%": { transform: "translateY(0px)", opacity: 1 },
+        },
+      },
       spacing: {
         "2-vh": "2vh",
         "4-vh": "4vh",
