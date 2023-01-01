@@ -10,7 +10,7 @@ function makeSettings(query) {
     return Object.freeze({ ...settings });
   }
 
-  if (!Object.keys(query).every((elmt) => ["orderby", "limit", "page"].includes(elmt))) {
+  if (!Object.keys(query).every((elmt) => ["orderby", "limit", "page", "action"].includes(elmt))) {
     throw "Bad request";
   }
 
@@ -29,6 +29,7 @@ function makeSettings(query) {
   settings.orderby = query.orderby ? query.orderby : ORDERBY;
   settings.limit = query.limit ? query.limit : LIMIT;
   settings.page = query.page ? query.page * LIMIT - LIMIT : LIMIT;
+  settings.action = query.action ? query.action : "";
 
   return Object.freeze({ ...settings });
 }
@@ -61,7 +62,83 @@ function makeDropdown(query) {
   return [...dropdown];
 }
 
+function calculateTotalPages(limit, totalRows, maxPages) {
+  if (totalRows % limit === 0) {
+    return totalRows / limit;
+  }
+
+  if (totalRows % limit > 0) {
+    return Math.ceil(totalRows / limit);
+  }
+
+  return Math.ceil(totalRows / limit / maxPages);
+}
+
+function makePages(url, query, totalRows, maxPerBigPage) {
+  let pages = [];
+  let bigPages = [];
+  const { limit, orderby, page } = query;
+
+  //bigPages creation array for prev and next
+  for (
+    let i = 0;
+    i < Math.ceil(totalRows / (query.limit ? query.limit : LIMIT) / maxPerBigPage);
+    i++
+  ) {
+    bigPages.push([]);
+  }
+
+  //create the previous/next
+  bigPages.map((elmt, idx) => {
+    let counter = 0;
+
+    if (idx === 0) {
+      counter = maxPerBigPage;
+    }
+
+    if (idx === 1) {
+      counter = Math.ceil(totalRows / 30) - maxPerBigPage;
+    }
+
+    if (idx > 1) {
+      counter = Math.ceil(totalRows / 30) - maxPerBigPage * (idx - 1);
+    }
+
+    for (let i = 0; i < counter; i++) {
+      elmt.push({
+        url: `${url}?orderby=${query.orderby ? query.orderby : ORDERBY}&limit=${
+          limit ? limit : LIMIT
+        }&page=${idx * maxPerBigPage + i + 1}`,
+        number: idx * maxPerBigPage + i + 1,
+      });
+    }
+
+    return elmt;
+  });
+
+  let currentPaginationIndex =
+    Math.ceil(((page ? page : 1) * limit) / maxPerBigPage / (limit ? limit : LIMIT)) - 1;
+
+  if (query.action === "next") {
+    query.page = maxPerBigPage + 1;
+    currentPaginationIndex += 1;
+  }
+
+  if (query.action === "prev") {
+    query.page = bigPages[currentPaginationIndex][0].number;
+  }
+
+  return {
+    currentPage: query.page,
+    allPages: [...bigPages],
+    currentPagination: bigPages[currentPaginationIndex],
+    next: currentPaginationIndex < bigPages.length - 1,
+    prev: currentPaginationIndex > 0 && currentPaginationIndex < bigPages.length,
+  };
+}
+
 module.exports = {
   makeDropdown,
   makeSettings,
+  makePages,
 };

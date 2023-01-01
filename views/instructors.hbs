@@ -6,7 +6,7 @@
       {{> instructors classes="w-full h-60-vh overflow-x-hidden p-4"}}
       <div class="h-4-vh w-full"></div>
       {{#if instructors}}
-      {{> pagination pages = pages}}
+      {{> pagination currentPage=currentPage pages=this.pages}}
       <template id="instructor">
             <li class="flex justify-between w-full p-2 bg-gray-300 transform transition duration-200 hover:scale-110 w-full mb-4 rounded shadow-xl">
                   <img class="image rounded-full h-16" src="" alt="user">  

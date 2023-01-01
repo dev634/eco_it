@@ -1,1 +1,13 @@
-<a id={{id}} class="px-2 bg-green-500" href={{url}}>{{number}}</a>
+{{#ifEquals id=id currentPage=currentPage}}
+  <a
+    id={{id}}
+    class="inline-block w-4-vh p-1 bg-gray-400 rounded hover:bg-green-400 mx-1-vw shadow-xl"
+    href={{url}}
+  >{{number}}</a>
+{{else}}
+  <a
+    id={{id}}
+    class="inline-block w-4-vh p-1 bg-green-500 rounded hover:bg-green-400 mx-1-vw shadow-xl"
+    href={{url}}
+  >{{number}}</a>
+{{/ifEquals}}

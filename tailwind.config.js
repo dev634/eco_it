@@ -63,6 +63,7 @@ module.exports = {
         },
       },
       spacing: {
+        "1-vh": "1vw",
         "2-vh": "2vh",
         "4-vh": "4vh",
         "6-vh": "6vh",
@@ -80,6 +81,7 @@ module.exports = {
         "74-vh": "74vh",
         "80-vh": "80vh",
         "90-vh": "90vh",
+        "1-vw": "1vw",
         "2-vw": "2vw",
         "4-vw": "4vw",
         "6-vw": "6vw",

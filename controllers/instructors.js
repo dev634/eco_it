@@ -4,14 +4,19 @@ const searchSchema = require("../validation/instructors");
 const Logger = require("../Services/logger");
 const { HttpErrors } = require("../helpers/errors");
 const Database = require("../Services/database");
-const { makeSettings, makeDropdown } = require("../helpers/makers");
+const { makeSettings, makeDropdown, makePages } = require("../helpers/makers");
+const querySchema = require("../validation/query");
 
 async function instructors(req, res) {
   try {
-    const settings = makeSettings(req.query);
-
-    let pages = [];
+    const validQuery = await querySchema.query.validateAsync({ ...req.query });
     const total = await Database.getTotalRows({ role: "instructor" }, "users", null);
+    const { allPages, currentPagination, next, prev, currentPage } = makePages(
+      "/admin/instructors",
+      validQuery,
+      total,
+      5
+    );
     const dropdown = makeDropdown(req.query);
     const instructors = await UsersModel.getUser(
       { role: "instructor" },
@@ -19,32 +24,27 @@ async function instructors(req, res) {
         "id",
         "firstname",
         "lastname",
+        "role",
         "email",
         "photo",
         "isapprouved",
         "created_at",
         "connected_at",
       ],
-      { ...settings }
+      { ...validQuery }
     );
-
-    const calculate = settings.limit ? Math.ceil(total / settings.limit) : Math.ceil(total / 10);
-    for (let i = 0; i < calculate; i++) {
-      pages.push({
-        url: `/admin/instructors?orderby=${
-          req.query.orderby ? req.query.orderby : "firstname"
-        }&limit=${settings.limit ? settings.limit : 10}&page=${i + 1}`,
-        number: i + 1,
-      });
-    }
 
     render(res, "instructors", {
       pageTitle: "instructeurs",
       layout: "admin",
       goBack: true,
       instructors,
-      pages,
+      currentPage,
+      query: validQuery,
+      pages: currentPagination,
       dropdown,
+      next,
+      prev,
     });
   } catch (error) {
     Logger(error);

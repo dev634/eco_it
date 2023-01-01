@@ -163,10 +163,9 @@ function makeSelectRequest(payload, table, responseFields, settings) {
     }
 
     if (settings.page) {
-      userRequest += `OFFSET ${settings.page} `;
+      userRequest += `OFFSET ${(settings.page - 1) * settings.limit} `;
     }
   }
-
   return userRequest;
 }
 

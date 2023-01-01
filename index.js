@@ -23,6 +23,17 @@ app.engine(
   engine({
     extname: ".hbs",
     partialsDir: hbsSettings.partialsPath,
+    helpers: {
+      ifEquals: function (values) {
+        const { currentPage } = values.data.root;
+        const { id } = values.hash;
+
+        if (currentPage == id) {
+          return values.fn(this);
+        }
+        return values.inverse(this);
+      },
+    },
   })
 );
 app.set("view engine", ".hbs");

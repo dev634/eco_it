@@ -1,7 +1,11 @@
-{{#if pages}}
 <ul id="pagination" class="w-full px-4 text-center transform translate-y-[20px] opacity-0 animate-fromBottom">
-  {{#each pages}}
-    {{> page id=number number=number}}
-  {{/each}}
+    {{#if prev}}
+        <a class="inline-block p-1 bg-green-500 rounded hover:bg-green-400 mx-1-vw shadow-xl" href="/admin/instructors?orderby={{query.orderby}}&limit={{query.limit}}&action=prev">{{> arrow_left}}</a>
+    {{/if}}
+    {{#each pages}}
+       {{> page id=number currentPage=../this.currentPage prev=../this.prev next=../this.next}}
+    {{/each}}
+    {{#if next}}
+        <a class="d-flex p-1 bg-green-500 rounded hover:bg-green-400 mx-1-vw shadow-xl" href="/admin/instructors?orderby={{query.orderby}}&limit={{query.limit}}&action=next">{{> arrow_right}}</a>
+    {{/if}}
 </ul>
-{{/if}}
